@@ -1,1 +1,52 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+:root {
+  --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-title: 'Roboto', sans-serif;
+  --text-primary: rgb(32, 33, 36);
+  --text-title-hover: rgb(228, 0, 43);
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--text-primary);
+}
+
+.font-title {
+  font-family: var(--font-title);
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.hover\:text-title-hover {
+  transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.hover\:text-title-hover:hover {
+  color: var(--text-title-hover);
+}
+
+.hover\:underline-scale {
+  position: relative;
+  display: inline-block; 
+  overflow: hidden; 
+}
+
+.hover\:underline-scale::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--text-title-hover);
+  position: absolute;
+  bottom: 1px; 
+  left: 0;
+  transform: scaleX(0);
+  transform-origin: center; 
+  transition: transform 0.3s ease;
+}
+
+.hover\:underline-scale:hover::after {
+  transform: scaleX(1); 
+}
