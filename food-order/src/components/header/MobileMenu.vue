@@ -91,4 +91,5 @@ const emit = defineEmits(['close'])
 const closeMenu = () => {
   emit('close')
 }
+
 </script>
