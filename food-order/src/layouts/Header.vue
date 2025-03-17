@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-white shadow-md py-4 px-6">
+  <header class="fixed top-0 left-0 w-full bg-white shadow-md py-4 px-6 z-50">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
       <div class="flex items-center space-x-4">
         <button @click="toggleMenu" class="md:hidden flex flex-col space-y-1">
@@ -14,11 +14,10 @@
           Food Order
         </router-link>
 
-        <!-- Logo on Desktop -->
+        <!-- Logo trên Desktop -->
         <router-link to="/" class="hidden md:block">
           <img src="../assets/img/logo.png" alt="FoodOrder Logo" class="h-17" />
         </router-link>
-        <!-- Menu on desktop -->
         <nav class="hidden md:flex space-x-6">
           <router-link
             to="/"
@@ -48,51 +47,32 @@
           <CircleUserRound class="w-8 h-8" />
         </router-link>
         <router-link to="/" class="font-title font-bold text-lg hover:text-title-hover">
-          <ShoppingBasket class="w-8 h-8" />
+          <ShoppingBasket class="w-9 h-9" />
         </router-link>
       </div>
     </div>
-
-    <!-- Menu Mobile -->
-    <div
-      class="fixed top-0 left-0 w-full h-full bg-white shadow-md md:hidden transition-transform duration-300"
-      :class="{ '-translate-x-full': !isMenuOpen, 'translate-x-0': isMenuOpen }"
-    >
-      <!-- Nút đóng menu -->
-      <button @click="toggleMenu" class="absolute top-4 right-4 text-2xl">
-        <X class="text-primary" />
-      </button>
-
-      <div class="max-w-7xl mx-auto p-4">
-        <nav class="flex flex-col space-y-4 mt-10">
-          <router-link to="/" class="font-title font-bold text-lg" @click="toggleMenu">
-            Trang chủ
-          </router-link>
-          <router-link to="/" class="font-title font-bold text-lg" @click="toggleMenu">
-            Thực đơn
-          </router-link>
-          <router-link to="/" class="font-title font-bold text-lg" @click="toggleMenu">
-            Danh mục
-          </router-link>
-          <router-link to="/" class="font-title font-bold text-lg" @click="toggleMenu">
-            Combo
-          </router-link>
-          <router-link to="/" class="font-title font-bold text-lg" @click="toggleMenu">
-            Về chúng tôi
-          </router-link>
-        </nav>
-      </div>
-    </div>
   </header>
+
+  <!-- Import Mobile Menu -->
+  <MobileMenu :isMenuOpen="isMenuOpen" @close="toggleMenu" />
 </template>
 
 <script setup>
-import { X, ShoppingBasket, CircleUserRound } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { ShoppingBasket, CircleUserRound } from 'lucide-vue-next'
+import MobileMenu from '../components/header/MobileMenu.vue'
 
 const isMenuOpen = ref(false)
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }
+
+watch(isMenuOpen, (newVal) => {
+  if (newVal) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = ''
+  }
+})
 </script>
