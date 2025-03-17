@@ -5,11 +5,16 @@
   --font-title: 'Roboto', sans-serif;
   --text-primary: rgb(32, 33, 36);
   --text-title-hover: rgb(228, 0, 43);
+  --font-title-menu-mobile: 'Oswald', sans-serif;
 }
 
 body {
   font-family: var(--font-family);
   color: var(--text-primary);
+}
+
+.font-title-menu-mobile {
+  font-family: var(--font-title-menu-mobile);
 }
 
 .font-title {
