@@ -45,10 +45,10 @@
 
       <div class="flex items-center space-x-4">
         <router-link to="/" class="font-title font-bold text-lg hover:text-title-hover">
-          <img src="../assets/img/account.png" alt="Account" class="h-8" />
+          <CircleUserRound class="w-8 h-8" />
         </router-link>
         <router-link to="/" class="font-title font-bold text-lg hover:text-title-hover">
-          <img src="../assets/img/cart.png" alt="Cart" class="h-8" />
+          <ShoppingBasket class="w-8 h-8" />
         </router-link>
       </div>
     </div>
@@ -60,7 +60,7 @@
     >
       <!-- Nút đóng menu -->
       <button @click="toggleMenu" class="absolute top-4 right-4 text-2xl">
-        <span class="text-primary"> ✖ </span>
+        <X class="text-primary" />
       </button>
 
       <div class="max-w-7xl mx-auto p-4">
@@ -87,6 +87,7 @@
 </template>
 
 <script setup>
+import { X, ShoppingBasket, CircleUserRound } from 'lucide-vue-next'
 import { ref } from 'vue'
 
 const isMenuOpen = ref(false)
