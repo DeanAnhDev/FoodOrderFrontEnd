@@ -1,5 +1,5 @@
 <template>
-  <header class="fixed top-0 left-0 w-full bg-white shadow-md py-4 px-6 z-50">
+  <header class="sticky top-0 left-0 w-full bg-white shadow-md py-4 px-6 z-50">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
       <div class="flex items-center space-x-4">
         <button @click="toggleMenu" class="md:hidden flex flex-col space-y-1">
@@ -14,7 +14,7 @@
           Food Order
         </router-link>
 
-        <!-- Logo trên Desktop -->
+        <!-- Logo on Desktop -->
         <router-link to="/" class="hidden md:block">
           <img src="../assets/img/logo.png" alt="FoodOrder Logo" class="h-17" />
         </router-link>

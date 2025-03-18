@@ -33,7 +33,7 @@
             </li>
           </ul>
         </div>
-        <router-link>
+        <router-link to="/">
           <img src="../assets/img/logobocongthuong.png" alt="Logo Bo Công Thương" />
         </router-link>
       </div>

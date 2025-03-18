@@ -82,7 +82,6 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
 import { X } from 'lucide-vue-next'
 
 const props = defineProps(['isMenuOpen'])
@@ -91,5 +90,4 @@ const emit = defineEmits(['close'])
 const closeMenu = () => {
   emit('close')
 }
-
 </script>
