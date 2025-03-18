@@ -55,11 +55,31 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
-import 'swiper/css/pagination'
 const slides = [{ image: '/banner.JPG' }, { image: '/banner1.jpg' }, { image: '/banner3.jpg' }]
 
 // func control Swiper
 const prevSlide = () => document.querySelector('.swiper-button-prev')?.click()
 const nextSlide = () => document.querySelector('.swiper-button-next')?.click()
 </script>
-1550 4089
+
+<style>
+.custom-swiper .swiper-button-prev,
+.custom-swiper .swiper-button-next {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  width: 40px;
+  height: 50px;
+}
+
+.custom-swiper .swiper-button-prev {
+  left: 0;
+}
+.custom-swiper .swiper-button-next {
+  right: 0;
+}
+.custom-swiper .swiper-button-prev::after,
+.custom-swiper .swiper-button-next::after {
+  font-size: 16px;
+  font-weight: bold;
+}
+</style>
