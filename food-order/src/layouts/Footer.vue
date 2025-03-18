@@ -48,12 +48,17 @@
 
 <script setup>
 import { ChevronDown } from 'lucide-vue-next'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useCategoryStore } from '@/stores/categoryStore'
 
-const menuItems = ref([
+const categoryStore = useCategoryStore()
+onMounted(() => {
+  categoryStore.fetchCategories()
+})
+const menuItems = computed(() => [
   {
     title: 'Danh mục món ăn',
-    links: ['Liên kết 1', 'Liên kết 2', 'Liên kết 3', 'Liên kết 2', 'Liên kết 3'],
+    links: categoryStore.categories.map((category) => category.categoryName),
   },
   {
     title: 'Về Food Order',
@@ -65,8 +70,7 @@ const menuItems = ref([
     links: ['Chính sách hoạt động', 'Chính sách và quy định', 'Chính sách bảo mật thông tin'],
   },
 ])
-
-const isOpen = ref(Array(menuItems.value.length).fill(false))
+const isOpen = ref([])
 const isLargeScreen = ref(window.innerWidth >= 768)
 
 const toggleMenu = (index) => {

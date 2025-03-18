@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import { getCategories } from '@/services/categoryService'
 
 export const useCategoryStore = defineStore('category', {
   state: () => ({
@@ -12,7 +12,7 @@ export const useCategoryStore = defineStore('category', {
       this.loading = true
       this.error = null
       try {
-        const response = await axios.get('https://localhost:7289/api/FoodCategory')
+        const response = await getCategories()
         this.categories = response.data
       } catch (err) {
         this.error = 'Không thể tải danh mục!'

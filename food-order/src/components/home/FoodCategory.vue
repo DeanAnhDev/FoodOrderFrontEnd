@@ -7,14 +7,14 @@
     </h1>
     <div class="flex-grow h-0.5 bg-gray-300 mr-5"></div>
   </section>
-  <section v-bind="$attrs">
+  <section v-bind="$attrs" class="mb-10">
     <p v-if="categoryStore.loading" class="text-center text-gray-500">Đang tải...</p>
 
     <p v-if="categoryStore.error" class="text-center text-red-500">{{ categoryStore.error }}</p>
 
     <div
       v-if="categoryStore.categories.length"
-      class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 m-2 gap-4"
+      class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 m-2 gap-5"
     >
       <div
         v-for="category in categoryStore.categories"

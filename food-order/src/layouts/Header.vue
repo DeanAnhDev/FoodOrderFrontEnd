@@ -20,12 +20,12 @@
         </router-link>
         <nav class="hidden md:flex space-x-6">
           <router-link
-            to="/"
+            :to="{ name: 'Home' }"  
             class="font-title font-bold text-lg uppercase hover:text-title-hover hover:underline-scale"
             >Thực đơn</router-link
           >
           <router-link
-            to="/"
+            :to="{ name: 'Category' }"
             class="font-title font-bold text-lg uppercase hover:text-title-hover hover:underline-scale"
             >Danh mục</router-link
           >
