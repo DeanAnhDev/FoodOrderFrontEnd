@@ -52,9 +52,11 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useCategoryStore } from '@/stores/categoryStore'
 
 const categoryStore = useCategoryStore()
+
 onMounted(() => {
   categoryStore.fetchCategories()
 })
+
 const menuItems = computed(() => [
   {
     title: 'Danh mục món ăn',
@@ -70,6 +72,7 @@ const menuItems = computed(() => [
     links: ['Chính sách hoạt động', 'Chính sách và quy định', 'Chính sách bảo mật thông tin'],
   },
 ])
+
 const isOpen = ref([])
 const isLargeScreen = ref(window.innerWidth >= 768)
 
@@ -94,4 +97,5 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', updateScreenSize)
 })
+
 </script>
