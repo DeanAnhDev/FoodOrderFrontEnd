@@ -12,7 +12,7 @@
 
     <div class="max-w-7xl mx-auto p-4">
       <nav class="flex flex-col space-y-4 mt-8">
-        <router-link to="/" @click="closeMenu">
+        <router-link :to="{ name: 'Home' }" @click="closeMenu">
           <div class="flex justify-between items-center bg-[#f8f7f5] p-2">
             <span class="text-primary text-l uppercase font-title-menu-mobile font-medium">
               Trang chủ
@@ -25,7 +25,7 @@
           </div>
         </router-link>
 
-        <router-link to="/" @click="closeMenu">
+        <router-link :to="{ name: 'Home' }" @click="closeMenu">
           <div class="flex justify-between items-center bg-[#f8f7f5] p-2">
             <span class="text-primary text-l uppercase font-title-menu-mobile font-medium">
               Thực đơn
@@ -38,7 +38,7 @@
           </div>
         </router-link>
 
-        <router-link to="/" @click="closeMenu">
+        <router-link :to="{ name: 'Category' }" @click="closeMenu">
           <div class="flex justify-between items-center bg-[#f8f7f5] p-2">
             <span class="text-primary text-l uppercase font-title-menu-mobile font-medium">
               Danh mục
@@ -51,7 +51,7 @@
           </div>
         </router-link>
 
-        <router-link to="/" @click="closeMenu">
+        <router-link :to="{ name: 'Combo' }" @click="closeMenu">
           <div class="flex justify-between items-center bg-[#f8f7f5] p-2">
             <span class="text-primary text-l uppercase font-title-menu-mobile font-medium">
               Combo
@@ -64,7 +64,7 @@
           </div>
         </router-link>
 
-        <router-link to="/" @click="closeMenu">
+        <router-link :to="{ name: 'AboutUs' }" @click="closeMenu">
           <div class="flex justify-between items-center bg-[#f8f7f5] p-2">
             <span class="text-primary text-l uppercase font-title-menu-mobile font-medium">
               Về chúng tôi

@@ -20,7 +20,7 @@
         </router-link>
         <nav class="hidden md:flex space-x-6">
           <router-link
-            :to="{ name: 'Home' }"  
+            :to="{ name: 'Home' }"
             class="font-title font-bold text-lg uppercase hover:text-title-hover hover:underline-scale"
             >Thực đơn</router-link
           >
@@ -30,12 +30,12 @@
             >Danh mục</router-link
           >
           <router-link
-            to="/"
+            :to="{ name: 'Combo' }"
             class="font-title font-bold text-lg uppercase hover:text-title-hover hover:underline-scale"
             >Combo</router-link
           >
           <router-link
-            to="/"
+            :to="{ name: 'AboutUs' }"
             class="font-title font-bold text-lg uppercase hover:text-title-hover hover:underline-scale"
             >Về chúng tôi</router-link
           >
