@@ -1,7 +1,12 @@
-<script setup></script>
-
 <template>
-  <main>
-    <h1 class="h-1000 w-100">Hello world</h1>
-  </main>
+  <div class="flex flex-col">
+    <Slider />
+    <FoodCategoy class="max-w-6xl w-full mx-auto" />
+
+  </div>
 </template>
+
+<script setup>
+import Slider from '@/components/home/Slider.vue'
+import FoodCategoy from '@/components/home/FoodCategory.vue'
+</script>

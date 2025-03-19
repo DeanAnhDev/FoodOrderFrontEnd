@@ -1,5 +1,5 @@
 <template>
-  <header class="fixed top-0 left-0 w-full bg-white shadow-md py-4 px-6 z-50">
+  <header class="sticky top-0 left-0 w-full bg-white shadow-md py-4 px-6 z-50">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
       <div class="flex items-center space-x-4">
         <button @click="toggleMenu" class="md:hidden flex flex-col space-y-1">
@@ -14,28 +14,28 @@
           Food Order
         </router-link>
 
-        <!-- Logo trên Desktop -->
+        <!-- Logo on Desktop -->
         <router-link to="/" class="hidden md:block">
           <img src="../assets/img/logo.png" alt="FoodOrder Logo" class="h-17" />
         </router-link>
         <nav class="hidden md:flex space-x-6">
           <router-link
-            to="/"
+            :to="{ name: 'Home' }"
             class="font-title font-bold text-lg uppercase hover:text-title-hover hover:underline-scale"
             >Thực đơn</router-link
           >
           <router-link
-            to="/"
+            :to="{ name: 'Category' }"
             class="font-title font-bold text-lg uppercase hover:text-title-hover hover:underline-scale"
             >Danh mục</router-link
           >
           <router-link
-            to="/"
+            :to="{ name: 'Combo' }"
             class="font-title font-bold text-lg uppercase hover:text-title-hover hover:underline-scale"
             >Combo</router-link
           >
           <router-link
-            to="/"
+            :to="{ name: 'AboutUs' }"
             class="font-title font-bold text-lg uppercase hover:text-title-hover hover:underline-scale"
             >Về chúng tôi</router-link
           >
