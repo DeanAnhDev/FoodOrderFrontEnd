@@ -8,19 +8,19 @@
           <span class="block w-6 h-0.5 bg-gray-800 transition-transform duration-300"></span>
         </button>
         <router-link
-          to="/"
+          :to="{ name: 'Home' }"
           class="text-3xl font-title font-bold md:hidden absolute left-1/2 transform -translate-x-1/2 text-[rgb(228,0,43)]"
         >
           Food Order
         </router-link>
 
         <!-- Logo on Desktop -->
-        <router-link to="/" class="hidden md:block">
+        <router-link :to="{ name: 'Home' }" class="hidden md:block">
           <img src="../assets/img/logo.png" alt="FoodOrder Logo" class="h-17" />
         </router-link>
         <nav class="hidden md:flex space-x-6">
           <router-link
-            :to="{ name: 'Home' }"
+            :to="{ name: 'Menu' }"
             class="font-title font-bold text-lg uppercase hover:text-title-hover hover:underline-scale"
             >Thực đơn</router-link
           >
@@ -60,7 +60,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { ShoppingBasket, CircleUserRound } from 'lucide-vue-next'
-import MobileMenu from '../components/header/MobileMenu.vue'
+import MobileMenu from '../components/headerComponents/MobileMenu.vue'
 
 const isMenuOpen = ref(false)
 

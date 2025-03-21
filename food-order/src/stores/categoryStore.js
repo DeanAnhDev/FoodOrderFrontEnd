@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getCategories } from '@/services/categoryService'
+import { getCategories, getCategoriesWithFoods } from '@/services/categoryService'
 
 export const useCategoryStore = defineStore('category', {
   state: () => ({
@@ -24,4 +24,26 @@ export const useCategoryStore = defineStore('category', {
   },
 })
 
+export const useCategoriesWithFoodsStore = defineStore('categoriesWithFoods', {
+  state: () => ({
+    categoriesWithFoods: [],
+    loading: false,
+    error: null,
+  }),
+  actions: {
+    async fetchCategoriesWithFoods() {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await getCategoriesWithFoods()
+        this.categoriesWithFoods = response.data
+      } catch (err) {
+        this.error = 'Không thể tải danh mục!'
+        console.error(err)
+      } finally {
+        this.loading = false
+      }
+    },
+  },
+})
 

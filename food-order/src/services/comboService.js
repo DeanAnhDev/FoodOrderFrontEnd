@@ -1,6 +1,6 @@
-import axios from 'axios'
+import axiosClient from '@/axiosClient';
 
 export const getCombos = async () => {
-  return axios.get('https://localhost:7289/api/Combo')
+  return axiosClient.get('/Combo');
 }
 

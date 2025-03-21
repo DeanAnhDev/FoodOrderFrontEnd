@@ -1,9 +1,10 @@
 <template>
-  <div>
+  <section>
     <FoodCategory class="max-w-6xl w-full mx-auto" />
-  </div>
+  </section>
+  
 </template>
 
 <script setup>
-import FoodCategory from '@/components/home/FoodCategory.vue'
+import FoodCategory from '@/components/foodCategoryComponents/FoodCategory.vue'
 </script>

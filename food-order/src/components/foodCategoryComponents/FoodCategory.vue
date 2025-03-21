@@ -19,11 +19,11 @@
       <div
         v-for="category in categoryStore.categories"
         :key="category.id"
-        class="rounded-lg shadow hover:shadow-lg transition cursor-pointer"
+        class=" rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
       >
         <div class="relative overflow-hidden rounded-t-lg aspect-[4/3]">
           <img
-            :src="`https://localhost:7289/${category.imageUrl}`"
+            :src="`${IMG_BASE_URL}${category.imageUrl}`"
             alt="Hình ảnh món ăn"
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
@@ -42,6 +42,8 @@
 import { onMounted } from 'vue'
 import { useCategoryStore } from '@/stores/categoryStore'
 import { ChevronRight } from 'lucide-vue-next'
+import { IMG_BASE_URL } from '../../config'
+
 
 const categoryStore = useCategoryStore()
 

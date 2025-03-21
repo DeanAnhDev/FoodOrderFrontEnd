@@ -25,7 +25,7 @@
           </div>
         </router-link>
 
-        <router-link :to="{ name: 'Home' }" @click="closeMenu">
+        <router-link :to="{ name: 'Menu' }" @click="closeMenu">
           <div class="flex justify-between items-center bg-[#f8f7f5] p-2">
             <span class="text-primary text-l uppercase font-title-menu-mobile font-medium">
               Thực đơn

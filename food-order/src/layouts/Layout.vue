@@ -4,7 +4,7 @@
     <Header />
 
     <!-- Main Content -->
-    <main class="bg-[#fff]">
+    <main class="bg-[#fff] flex-grow">
       <router-view />
     </main>
     <!-- Footer -->

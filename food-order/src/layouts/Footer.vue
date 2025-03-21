@@ -74,6 +74,7 @@ const menuItems = computed(() => [
 ])
 
 const isOpen = ref([])
+
 const isLargeScreen = ref(window.innerWidth >= 768)
 
 const toggleMenu = (index) => {

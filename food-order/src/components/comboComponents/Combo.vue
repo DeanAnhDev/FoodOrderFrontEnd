@@ -23,7 +23,7 @@
       >
         <div class="relative overflow-hidden rounded-t-lg aspect-[4/3]">
           <img
-            :src="`https://localhost:7289/${combo.image}`"
+             :src="`${IMG_BASE_URL}${combo.image}`"
             alt="Hình ảnh combo"
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
@@ -42,10 +42,13 @@
 import { onMounted } from 'vue'
 import { useComboStore } from '@/stores/comboStore'
 import { ChevronRight } from 'lucide-vue-next'
+import { IMG_BASE_URL } from '../../config'
+
 
 const comboStore = useComboStore()
 
 onMounted(() => {
   comboStore.fetchCombos()
 })
+
 </script>
