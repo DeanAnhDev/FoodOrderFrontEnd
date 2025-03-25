@@ -1,4 +1,4 @@
-<template >
+<template>
   <section v-bind="$attrs" class="mb-10">
     <p v-if="foodCategoriesWithFoodsStore.loading" class="text-center text-gray-500">Đang tải...</p>
 
@@ -7,8 +7,8 @@
     </p>
 
     <div
-      v-else-if="foodCategoriesWithFoodsStore.categoriesWithFoods.length > 0"
-      v-for="category in foodCategoriesWithFoodsStore.categoriesWithFoods"
+      v-else-if="categoriesWithFoods.length > 0"
+      v-for="category in categoriesWithFoods"
       :key="category.id"
       class="mt-5"
     >
@@ -37,14 +37,15 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useCategoriesWithFoodsStore } from '@/stores/categoryStore'
 import FoodComponent from '@/components/foodComponents/FoodComponent.vue'
 
 const foodCategoriesWithFoodsStore = useCategoriesWithFoodsStore()
+const categoriesWithFoods = computed(() => foodCategoriesWithFoodsStore.categoriesWithFoods)
 
-onMounted(() => {
-  foodCategoriesWithFoodsStore.fetchCategoriesWithFoods()
+onMounted(async () => {
+  await foodCategoriesWithFoodsStore.fetchCategoriesWithFoods()
 })
 
 const formattedPrice = (price) => {

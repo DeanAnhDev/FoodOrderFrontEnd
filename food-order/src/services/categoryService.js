@@ -7,3 +7,4 @@ export const getCategories = async () => {
 export const getCategoriesWithFoods = async () => {
   return axiosClient.get('/FoodCategory/with-foods')
 }
+

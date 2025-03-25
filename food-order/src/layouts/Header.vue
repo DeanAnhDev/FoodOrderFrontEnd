@@ -43,7 +43,7 @@
       </div>
 
       <div class="flex items-center space-x-4">
-        <router-link to="/" class="font-title font-bold text-lg hover:text-title-hover">
+        <router-link :to="{name:'Login'}" class="font-title font-bold text-lg hover:text-title-hover">
           <CircleUserRound class="w-8 h-8" />
         </router-link>
         <router-link to="/" class="font-title font-bold text-lg hover:text-title-hover">

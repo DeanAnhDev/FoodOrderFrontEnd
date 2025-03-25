@@ -4,6 +4,9 @@ import CategoryView from '@/views/CategoryView.vue'
 import ComboView from '@/views/ComboView.vue'
 import AboutUsView from '@/views/AboutUsView.vue'
 import MenuView from '@/views/MenuView.vue'
+import LoginView from '@/views/LoginView.vue'
+import RegisterView from '@/views/RegisterView.vue'
+import FoodDetailView from '@/views/FoodDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +35,22 @@ const router = createRouter({
       path: '/Menu',
       name: 'Menu',
       component: MenuView,
+    },
+    {
+      path: '/Login',
+      name: 'Login',
+      component: LoginView,
+    },
+    {
+      path: '/Register',
+      name: 'Register',
+      component: RegisterView,
+    },
+    {
+      path: '/:categorySlug/:foodSlug',
+      name: 'FoodDetail',
+      component: FoodDetailView,
+      props: true,
     },
   ],
 })

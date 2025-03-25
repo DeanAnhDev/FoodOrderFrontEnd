@@ -8,18 +8,22 @@
       <div class="relative overflow-hidden rounded-t-lg aspect-[4/3]">
         <Info
           class="absolute top-2 right-2 h-7 w-7 bg-black/50 text-white rounded-full shadow-md z-10 cursor-pointer transition-all duration-300 hover:bg-black/70"
-        />  
+        />
 
         <img
           :src="`${IMG_BASE_URL}${food.image}`"
           alt="Hình ảnh món ăn"
           class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          @click="goToFoodDetail(category.slug, food.slug)"
         />
       </div>
 
       <div class="p-4 flex flex-col flex-grow">
         <div class="flex justify-between">
-          <h2 class="text-xl text-primary font-semibold w-3/5 break-words cursor-pointer">
+          <h2
+            class="text-xl text-primary font-semibold w-3/5 break-words cursor-pointer"
+            @click="goToFoodDetail(category.slug, food.slug)"
+          >
             {{ food.foodName }}
           </h2>
           <h2 class="text-xl text-primary font-bold w-2/5 text-right">
@@ -45,7 +49,7 @@
 <script setup>
 import { IMG_BASE_URL } from '../../config'
 import { Info } from 'lucide-vue-next'
-
+import { useRouter } from 'vue-router'
 defineProps({
   category: Object,
   formattedPrice: Function,
@@ -55,5 +59,11 @@ const emit = defineEmits(['add-to-cart'])
 
 const addToCart = (food) => {
   emit('add-to-cart', food)
+}
+
+const router = useRouter()
+
+const goToFoodDetail = (categorySlug, foodSlug) => {
+  router.push({ name: 'FoodDetail', params: { categorySlug, foodSlug } })
 }
 </script>
