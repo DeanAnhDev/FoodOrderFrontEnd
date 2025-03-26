@@ -1,5 +1,9 @@
 import { defineStore } from 'pinia'
-import { getCategories, getCategoriesWithFoods } from '@/services/categoryService'
+import {
+  getCategories,
+  getCategoriesWithFoods,
+  getListFoodByCategorySlug,
+} from '@/services/categoryService'
 
 export const useCategoryStore = defineStore('category', {
   state: () => ({
@@ -47,3 +51,25 @@ export const useCategoriesWithFoodsStore = defineStore('categoriesWithFoods', {
   },
 })
 
+export const useFoodsByCategorySlugStore = defineStore('foodsByCategorySlug', {
+  state: () => ({
+    foodsByCategorySlug: [],
+    loading: false,
+    error: null,
+  }),
+  actions: {
+    async fetchFoodsByCategorySlug(slug) {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await getListFoodByCategorySlug(slug)
+        this.foodsByCategorySlug = response.data
+      } catch (err) {
+        this.error = 'Không thể tải danh mục!'
+        console.error(err)
+      } finally {
+        this.loading = false
+      }
+    },
+  },
+})

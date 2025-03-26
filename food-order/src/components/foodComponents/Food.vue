@@ -20,15 +20,8 @@
         </h1>
         <div class="flex-grow h-0.5 bg-gray-300 mr-5"></div>
       </div>
-
-      <p v-if="category.foods.length === 0" class="text-center text-gray-500">
-        Không có món ăn nào.
-      </p>
-
       <FoodComponent
         :category="category"
-        :formattedPrice="formattedPrice"
-        @add-to-cart="addToCart"
       />
     </div>
 
@@ -48,14 +41,6 @@ onMounted(async () => {
   await foodCategoriesWithFoodsStore.fetchCategoriesWithFoods()
 })
 
-const formattedPrice = (price) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(price)
-}
 
-const addToCart = (food) => {
-  console.log('Món ăn được thêm:', food)
-}
+
 </script>
