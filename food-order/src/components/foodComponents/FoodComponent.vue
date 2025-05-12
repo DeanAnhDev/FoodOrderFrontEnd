@@ -54,15 +54,14 @@ import { computed } from 'vue'
 import { IMG_BASE_URL } from '../../config'
 import { Info } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
+import { formattedPrice } from '@/utils/formart'
 
-// Nhận dữ liệu từ component cha
 const props = defineProps({
   category: Object,
 })
 
 const router = useRouter()
 
-// Gộp món ăn & combo thành một danh sách chung
 const combinedItems = computed(() => {
   const foods =
     props.category.foods?.map((food) => ({
@@ -86,30 +85,21 @@ const combinedItems = computed(() => {
       type: 'combo',
     })) || []
 
-  return [...foods, ...combos] // Kết hợp danh sách
+  return [...foods, ...combos] 
 })
 
-// Hàm định dạng giá tiền
-const formattedPrice = (price) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(price)
-}
-
-// Điều hướng đến chi tiết món ăn hoặc combo
 const goToDetail = (categorySlug, itemSlug, type) => {
   router.push({
     name: type === 'food' ? 'FoodDetail' : 'ComboDetail',
     params: {
       categorySlug,
-      [type === 'food' ? 'foodSlug' : 'comboSlug']: itemSlug, // Đổi key động theo loại item
+      [type === 'food' ? 'foodSlug' : 'comboSlug']: itemSlug,
     },
   })
 }
 
-// Hàm thêm vào giỏ hàng
 const addToCart = (item) => {
   console.log('Đã thêm vào giỏ hàng:', item)
 }
+
 </script>

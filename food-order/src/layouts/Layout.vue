@@ -2,7 +2,6 @@
   <div class="flex flex-col min-h-screen">
     <!-- Header -->
     <Header />
-
     <!-- Main Content -->
     <main class="bg-[#fff] flex-grow">
       <router-view />

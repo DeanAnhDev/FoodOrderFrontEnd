@@ -23,7 +23,7 @@ import { computed, onMounted } from 'vue'
 import { IMG_BASE_URL } from '../../config'
 import { useRoute } from 'vue-router'
 import { useFoodBySlugStore } from '@/stores/foodStore'
-
+import { formattedPrice } from '@/utils/formart'
 const route = useRoute()
 const foodBySlugStore = useFoodBySlugStore()
 
@@ -36,10 +36,4 @@ onMounted(() => {
   }
 })
 
-const formattedPrice = (price) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(price)
-}
 </script>
