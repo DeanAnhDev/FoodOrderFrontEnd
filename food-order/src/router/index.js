@@ -8,6 +8,7 @@ import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import FoodDetailView from '@/views/FoodDetailView.vue'
 import FoodInCategoryView from '@/views/FoodInCategoryView.vue'
+import ComboDetailView from '@/views/ComboDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +52,12 @@ const router = createRouter({
       path: '/:categorySlug/:foodSlug',
       name: 'FoodDetail',
       component: FoodDetailView,
+      props: true,
+    },
+   {
+      path: '/:categorySlug/:comboSlug',
+      name: 'ComboDetail',
+      component: ComboDetailView,
       props: true,
     },
     {

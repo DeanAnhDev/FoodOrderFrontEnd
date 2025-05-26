@@ -1,5 +1,5 @@
 <template>
-    <FoodDetailComponent />
+    <FoodDetailComponent class="max-w-6xl w-full mx-auto"/>
 </template>
 
 <script setup>
