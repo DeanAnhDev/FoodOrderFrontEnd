@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <section>
     <Combo class="max-w-6xl w-full mx-auto" />
-  </div>
+  </section>
 </template>
 
 <script setup>
-import Combo from '@/components/comboComponents/Combo.vue';
+import Combo from '@/components/comboComponents/Combo.vue'
 </script>
