@@ -3,6 +3,7 @@ import {
   getCategories,
   getCategoriesWithFoods,
   getListFoodByCategorySlug,
+  getListComboByCategorySlug,
 } from '@/services/categoryService'
 
 export const useCategoryStore = defineStore('category', {
@@ -73,3 +74,27 @@ export const useFoodsByCategorySlugStore = defineStore('foodsByCategorySlug', {
     },
   },
 })
+
+export const useCombosByCategorySlugStore = defineStore('combosByCategorySlug', {
+  state: () => ({
+    combosByCategorySlug: [],
+    loading: false,
+    error: null,
+  }),
+  actions: {
+    async fetchCombosByCategorySlug(slug) {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await getListComboByCategorySlug(slug)
+        this.combosByCategorySlug = response.data
+      } catch (err) {
+        this.error = 'Không thể tải danh mục!'
+        console.error(err)
+      } finally {
+        this.loading = false
+      }
+    },
+  },
+})
+

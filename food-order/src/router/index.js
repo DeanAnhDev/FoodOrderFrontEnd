@@ -49,14 +49,21 @@ const router = createRouter({
       component: RegisterView,
     },
     {
-      path: '/:categorySlug/:foodSlug',
+      path: '/categories/:categorySlug/:foodSlug',
       name: 'FoodDetail',
       component: FoodDetailView,
       props: true,
     },
    {
-      path: '/:categorySlug/:comboSlug',
+      path: '/categories/:categorySlug/:comboSlug',
       name: 'ComboDetail',
+      component: ComboDetailView,
+      props: true,
+    },
+    //combo-2
+    {
+      path: '/menu/:comboSlug',
+      name: 'ComboDetailNav',
       component: ComboDetailView,
       props: true,
     },

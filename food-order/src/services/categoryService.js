@@ -12,3 +12,6 @@ export const getListFoodByCategorySlug = async (slug) => {
   return axiosClient.get(`/FoodCategory/foods-by-category/${slug}`)
 }
 
+export const getListComboByCategorySlug = async (slug) => {
+  return axiosClient.get(`/FoodCategory/combos-by-category/${slug}`)
+}
