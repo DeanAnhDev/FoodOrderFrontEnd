@@ -19,8 +19,8 @@
           <h2 class="text-2xl md:text-3xl font-bold items-center uppercase">{{ food.foodName }}</h2>
           <p class="text-2xl md:text-3xl font-semibold uppercase ">{{ formattedPrice(food.price) }}</p>
         </div>
-        <p class="text-gray-700 mt-4">{{ food.description }}</p>
-        <div class="h-[1px] bg-gray-400 -mx-6  mt-4 hidden md:block"></div>
+        <p class="text-gray-700 my-4">{{ food.description }}</p>
+  
         <!-- Wrapper cho mobile fixed -->
         <div
           class="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-[0_-2px_10px_rgba(0,0,0,0.1)]  md:static md:shadow-none lg:p-0">

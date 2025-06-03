@@ -1,40 +1,51 @@
 <template>
   <section v-bind="$attrs">
-    <div v-if="comboWithFoods" class="lg:grid lg:grid-cols-5 gap-6 px-4 py-4 lg:px-8 lg:py-10">
-      <div class="flex justify-center col-span-3">
-        <img :src="`${IMG_BASE_URL}${comboWithFoods.image}`" alt="Hình ảnh combo"
-          class="w-[70%] md:w-[50%] lg:w-[70%] lg:rounded-lg" />
+    <div v-if="comboWithFoods" class="lg:grid lg:grid-cols-5 gap-6  py-4 lg:px-8 lg:py-10">
+      <div class="flex justify-center col-span-3 items-start ">
+        <div class="w-[70%] md:w-[50%] lg:w-[80%] aspect-[4/3]">
+          <img :src="`${IMG_BASE_URL}${comboWithFoods.image}`" alt="Hình ảnh combo"
+            class="w-full h-full object-contain rounded-lg" />
+        </div>
       </div>
 
-      <div class="h-[1px] bg-gray-400 -mx-6  mt-4 lg:hidden"></div>
 
-      <div class="h-fit rounded-lg pt-4 relative lg:p-6 lg:px-8 lg:shadow-[0_0_10px_rgba(0,0,0,0.2)] col-span-2">
-        <div class="absolute flex space-x-2 top-0 left-0 lg:left-8">
+      <div class="w-full h-[1px] bg-gray-300 mt-4 lg:hidden"></div>
+      <div class="h-fit rounded-lg pt-4 relative lg:p-6 lg:px-6 lg:shadow-[0_0_10px_rgba(0,0,0,0.2)] col-span-2 ">
+        <div class="absolute flex space-x-2 top-0 left-0 lg:left-8 left-4">
           <span class="w-3 h-7 bg-red-600 inline-block"></span>
           <span class="w-3 h-7 bg-red-600 inline-block"></span>
           <span class="w-3 h-7 bg-red-600 inline-block"></span>
         </div>
 
-        <div class="flex justify-between mt-8 gap-2">
-          <h2 class="text-2xl md:text-3xl font-bold items-center uppercase">{{ comboWithFoods.comboName }}</h2>
-          <p class="text-2xl md:text-3xl font-semibold uppercase ">{{ formattedPrice(comboWithFoods.price) }}</p>
+        <div class="flex justify-between mt-8 gap-2 px-4 lg:px-0">
+          <h2 class="text-3xl md:text-3xl font-bold items-center uppercase">{{ comboWithFoods.comboName }}</h2>
+          <p class="text-3xl md:text-3xl font-semibold uppercase ">{{ formattedPrice(comboWithFoods.price) }}</p>
         </div>
-        <p class="text-gray-700 mt-4">{{ comboWithFoods.description }}</p>
-        <div class="h-[1px] bg-gray-400 -mx-6  mt-4 hidden md:block"></div>
+        <p class="text-gray-700 mt-4 px-4 lg:px-0 lg:pb-4">{{ comboWithFoods.description }}</p>
 
-        
-    <h3>Món ăn trong combo:</h3>
-    <ul>
-      <li v-for="detail in comboWithFoods.comboDetails">
-        <img :src="`${IMG_BASE_URL}${detail.food.image}`" alt="Food image" width="50" />
-        <strong>{{ detail.food.foodName }}</strong> - SL: {{ detail.quantity }} -
-        Giá: {{ detail.food.price.toLocaleString() }}đ
-      </li>
-    </ul>
+
+
+        <div class="border-gray-200  lg:border-t  lg:pt-4">
+          <div class="w-full h-[1px] bg-gray-200 mt-4 lg:hidden"></div>
+          <h3 class="font-semibold text-xl px-4 lg:px-0 uppercase hidden lg:block">Combo bao gồm:</h3>
+          <ul class="mb-6">
+            <li v-for="detail in comboWithFoods.comboDetails">
+              <div class="px-4 lg:px-0 flex my-5 gap-3">
+                <img :src="`${IMG_BASE_URL}${detail.food.image}`" alt="Food image" width="100" class="" />
+                <div class=" flex flex-col justify-center text-xl ">
+                  <strong>{{ detail.food.foodName }}</strong>
+                  <p>({{ detail.quantity }} Phần)</p>
+                </div>
+              </div>
+              <div class="w-full h-[1px] bg-gray-300 mt-4 lg:hidden"></div>
+            </li>
+          </ul>
+        </div>
+
         <!-- Wrapper cho mobile fixed -->
         <div
           class="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-[0_-2px_10px_rgba(0,0,0,0.1)]  md:static md:shadow-none lg:p-0">
-          <div class="flex items-center justify-between gap-x-4 border-gray-300  lg:border-t lg:pt-4">
+          <div class="flex items-center justify-between gap-x-4 border-gray-200 lg:border-t lg:pt-4">
             <!-- Quantity Controls -->
             <div class="flex items-center gap-x-2">
               <!-- Minus Button -->
