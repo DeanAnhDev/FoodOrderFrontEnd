@@ -51,7 +51,7 @@
             <!-- Add to Cart Button -->
             <div class="flex-grow md:flex-grow-0">
               <button @click="addToCart(food)" class="w-full py-3 bg-red-600 text-white rounded-full font-semibold text-lg 
-                 hover:bg-red-700 transition-colors duration-300 cursor-pointer md:w-auto md:px-6">
+                 hover:bg-red-700 transition-colors duration-300 cursor-pointer md:w-auto md:px-6 lg:text-sm">
                 Thêm vào giỏ hàng <i class="fas fa-shopping-cart ml-2"></i>
               </button>
             </div>
