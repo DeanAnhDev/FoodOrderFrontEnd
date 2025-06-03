@@ -10,6 +10,7 @@ import FoodDetailView from '@/views/FoodDetailView.vue'
 import FoodInCategoryView from '@/views/FoodInCategoryView.vue'
 import ComboDetailView from '@/views/ComboDetailView.vue'
 
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -49,15 +50,15 @@ const router = createRouter({
       component: RegisterView,
     },
     {
-      path: '/categories/:categorySlug/:foodSlug',
+      path: '/categories/:categorySlug/food-detail/:foodSlug',
       name: 'FoodDetail',
       component: FoodDetailView,
       props: true,
     },
    {
-      path: '/categories/:categorySlug/:comboSlug',
+      path: '/categories/:categorySlug/combo-detail/:comboSlug',
       name: 'ComboDetail',
-      component: ComboDetailView,
+     component: ComboDetailView,
       props: true,
     },
     //combo-2

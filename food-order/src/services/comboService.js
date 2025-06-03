@@ -4,3 +4,6 @@ export const getCombos = async () => {
   return axiosClient.get('/Combo');
 }
 
+export const getComboWithFoods = async (slug) => {
+  return axiosClient.get(`/Combo/get-combo-with-food/slug/${slug}`);
+}

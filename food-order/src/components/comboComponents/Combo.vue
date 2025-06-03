@@ -6,7 +6,7 @@
     <div class="flex-grow h-0.5 bg-gray-300 mr-5"></div>
   </section>
   <section v-bind="$attrs" class="mb-10">
-    <p v-if="comboStore.loading" class="text-center text-gray-500">Đang tải...</p>
+ 
 
     <p v-if="comboStore.error" class="text-center text-red-500">{{ comboStore.error }}</p>
 
