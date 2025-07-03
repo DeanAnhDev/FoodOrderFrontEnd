@@ -2,7 +2,7 @@
   <section v-bind="$attrs">
     <div v-if="food" class="lg:grid lg:grid-cols-5 gap-6 px-4 py-4 lg:px-8 lg:py-10">
       <div class="flex justify-center col-span-3">
-        <img :src="`${IMG_BASE_URL}${food.image}`" alt="Hình ảnh món ăn"
+        <img v-if="food.images?.url" :src="food.images.url" alt="Hình ảnh món ăn"
           class="w-[70%] md:w-[50%] lg:w-[70%] lg:rounded-lg" />
       </div>
 
@@ -68,7 +68,6 @@
 
 <script setup>
 import { computed, onMounted } from 'vue'
-import { IMG_BASE_URL } from '../../config'
 import { useRoute } from 'vue-router'
 import { useFoodBySlugStore } from '@/stores/foodStore'
 import { formattedPrice } from '@/utils/formart'

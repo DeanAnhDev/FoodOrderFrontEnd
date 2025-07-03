@@ -55,7 +55,7 @@ const router = createRouter({
       component: FoodDetailView,
       props: true,
     },
-   {
+    {
       path: '/categories/:categorySlug/combo-detail/:comboSlug',
       name: 'ComboDetail',
      component: ComboDetailView,

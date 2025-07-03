@@ -13,6 +13,7 @@ export const useFoodBySlugStore = defineStore('foodBySlug', {
       this.error = null
       try {
         const response = await getFoodBySlug(slug)
+        console.log(response.data)
         this.food = response.data
       } catch (err) {
         this.error = 'Không thể tải món ăn!'

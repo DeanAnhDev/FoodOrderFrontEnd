@@ -3,7 +3,7 @@
     <div v-if="comboWithFoods" class="lg:grid lg:grid-cols-5 gap-6  py-4 lg:px-8 lg:py-10">
       <div class="flex justify-center col-span-3 items-start ">
         <div class="w-[70%] md:w-[50%] lg:w-[80%] aspect-[4/3]">
-          <img :src="`${IMG_BASE_URL}${comboWithFoods.image}`" alt="Hình ảnh combo"
+          <img v-if="comboWithFoods.images?.url" :src="`${comboWithFoods.images.url}`" alt="Hình ảnh combo"
             class="w-full h-full object-contain rounded-lg" />
         </div>
       </div>
@@ -31,7 +31,7 @@
           <ul class="mb-6">
             <li v-for="detail in comboWithFoods.comboDetails">
               <div class="px-4 lg:px-0 flex my-5 gap-3">
-                <img :src="`${IMG_BASE_URL}${detail.food.image}`" alt="Food image" width="100" class="" />
+                <img v-if="detail.food.images?.url" :src="`${detail.food.images.url}`" alt="Food image" class="w-[100px] h-[100px]" />
                 <div class=" flex flex-col justify-center text-xl ">
                   <strong>{{ detail.food.foodName }}</strong>
                   <p>({{ detail.quantity }} Phần)</p>
@@ -93,7 +93,6 @@
 
 <script setup>
 import { computed, onMounted } from 'vue'
-import { IMG_BASE_URL } from '../../config'
 import { useRoute } from 'vue-router'
 import { formattedPrice } from '@/utils/formart'
 import { ref } from 'vue'

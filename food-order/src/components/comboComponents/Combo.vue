@@ -21,7 +21,7 @@
 
             <!-- Image -->
             <div class="col-span-5 md:col-span-1 overflow-hidden md:rounded-t-lg relative aspect-[4/3]">
-              <img :src="`${IMG_BASE_URL}${item.image}`" :alt="`Hình ảnh ${item.comboName}`"
+              <img :src="`${item.images.url}`" :alt="`Hình ảnh ${item.comboName}`"
                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 @click="goToDetail(item.slug)" />
             </div>

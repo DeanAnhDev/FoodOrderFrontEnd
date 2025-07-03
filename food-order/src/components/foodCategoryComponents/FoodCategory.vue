@@ -17,7 +17,7 @@
       >
         <div class="relative overflow-hidden rounded-t-lg aspect-[4/3]">
           <img
-            :src="`${IMG_BASE_URL}${category.imageUrl}`"
+            :src="`${category.images.url}`"
             alt="Hình ảnh món ăn"
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
@@ -34,7 +34,6 @@
 import { onMounted } from 'vue'
 import { useCategoryStore } from '@/stores/categoryStore'
 import { ChevronRight } from 'lucide-vue-next'
-import { IMG_BASE_URL } from '../../config'
 import { useRouter } from 'vue-router'
 
 const categoryStore = useCategoryStore()
@@ -47,4 +46,5 @@ const goToCategory = (categorySlug) => {
 onMounted(() => {
   categoryStore.fetchCategories()
 })
+
 </script>

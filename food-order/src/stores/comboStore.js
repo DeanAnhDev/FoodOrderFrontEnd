@@ -39,9 +39,9 @@ export const useComboDetailWithFoodsStore = defineStore("comboWithFoods", {
       try {
         const response = await getComboWithFoods(slug);
         this.comboWithFoods = response.data;
-        // comboStore.js
+      
 console.log("response from API:", response.data)
-console.log("first food in comboDetails:", response.data?.comboDetails?.[0]?.food)
+
 
 
       } catch (err) {

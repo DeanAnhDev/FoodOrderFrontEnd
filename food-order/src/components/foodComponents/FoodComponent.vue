@@ -8,7 +8,7 @@
             class="absolute top-2 right-2 h-7 w-7 bg-black/50 text-white rounded-full shadow-md z-10 cursor-pointer transition-all duration-300 hover:bg-black/70" />
           <!-- image -->
           <div class="col-span-5 md:col-span-1 overflow-hidden md:rounded-t-lg relative aspect-[4/3]">
-            <img :src="`${IMG_BASE_URL}${item.image}`" :alt="`Hình ảnh ${item.type === 'food' ? 'món ăn' : 'combo'}`"
+            <img :src="`${item.image.url}`" :alt="`Hình ảnh ${item.type === 'food' ? 'món ăn' : 'combo'}`"
               class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
               @click="goToDetail(category.slug, item.slug, item.type)" />
           </div>
@@ -45,7 +45,6 @@
 
 <script setup>
 import { computed } from 'vue'
-import { IMG_BASE_URL } from '../../config'
 import { Info } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { formattedPrice } from '@/utils/formart'
@@ -61,7 +60,7 @@ const combinedItems = computed(() => {
     props.category.foods?.map((food) => ({
       id: food.foodId,
       name: food.foodName,
-      image: food.image,
+      image: food.images,
       price: food.price,
       description: food.description,
       slug: food.slug,
@@ -72,7 +71,7 @@ const combinedItems = computed(() => {
     props.category.combos?.map((combo) => ({
       id: combo.comboId,
       name: combo.comboName,
-      image: combo.image,
+      image: combo.images,
       price: combo.price,
       description: combo.description,
       slug: combo.slug,

@@ -41,6 +41,7 @@ export const useCategoriesWithFoodsStore = defineStore('categoriesWithFoods', {
       this.error = null
       try {
         const response = await getCategoriesWithFoods()
+        console.log(response.data)
         this.categoriesWithFoods = response.data
       } catch (err) {
         this.error = 'Không thể tải danh mục!'
