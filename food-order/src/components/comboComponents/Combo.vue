@@ -21,7 +21,8 @@
 
             <!-- Image -->
             <div class="col-span-5 md:col-span-1 overflow-hidden md:rounded-t-lg relative aspect-[4/3]">
-              <img :src="`${item.images.url}`" :alt="`Hình ảnh ${item.comboName}`"
+              <img v-if="item.images?.url" :src="`${item.images.url}`" :alt="`Hình ảnh ${item.comboName}`"
+           
                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 @click="goToDetail(item.slug)" />
             </div>
@@ -61,7 +62,6 @@
 import { onMounted } from 'vue'
 import { useComboStore } from '@/stores/comboStore'
 import { Info } from 'lucide-vue-next'
-import { IMG_BASE_URL } from '../../config'
 import { formattedPrice } from '@/utils/formart'
 import { useRouter } from 'vue-router'
 const comboStore = useComboStore()

@@ -3,7 +3,6 @@ import {
   getCategories,
   getCategoriesWithFoods,
   getListFoodByCategorySlug,
-  getListComboByCategorySlug,
 } from '@/services/categoryService'
 
 export const useCategoryStore = defineStore('category', {
@@ -52,10 +51,9 @@ export const useCategoriesWithFoodsStore = defineStore('categoriesWithFoods', {
     },
   },
 })
-
 export const useFoodsByCategorySlugStore = defineStore('foodsByCategorySlug', {
   state: () => ({
-    foodsByCategorySlug: [],
+    foodsByCategorySlug: null, // ✅ object chứa category, foods, combos
     loading: false,
     error: null,
   }),
@@ -65,7 +63,7 @@ export const useFoodsByCategorySlugStore = defineStore('foodsByCategorySlug', {
       this.error = null
       try {
         const response = await getListFoodByCategorySlug(slug)
-        this.foodsByCategorySlug = response.data
+        this.foodsByCategorySlug = response.data // ✅ object với fields: foods, combos
       } catch (err) {
         this.error = 'Không thể tải danh mục!'
         console.error(err)
@@ -75,27 +73,3 @@ export const useFoodsByCategorySlugStore = defineStore('foodsByCategorySlug', {
     },
   },
 })
-
-export const useCombosByCategorySlugStore = defineStore('combosByCategorySlug', {
-  state: () => ({
-    combosByCategorySlug: [],
-    loading: false,
-    error: null,
-  }),
-  actions: {
-    async fetchCombosByCategorySlug(slug) {
-      this.loading = true
-      this.error = null
-      try {
-        const response = await getListComboByCategorySlug(slug)
-        this.combosByCategorySlug = response.data
-      } catch (err) {
-        this.error = 'Không thể tải danh mục!'
-        console.error(err)
-      } finally {
-        this.loading = false
-      }
-    },
-  },
-})
-
