@@ -11,7 +11,7 @@
     <p v-if="comboStore.error" class="text-center text-red-500">{{ comboStore.error }}</p>
 
     <div>
-      <ul v-if="comboStore.combos.length > 0" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 p-3">
+      <ul v-if="comboStore?.combos?.length > 0" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 p-3">
         <li v-for="item in comboStore.combos" :key="item.comboId"
           class="rounded-lg shadow-[0_4px_10px_rgba(0,0,0,0.2)] hover:shadow-xl transition-shadow duration-300 bg-white flex flex-col h-full">
           <div class="grid grid-cols-12 gap-2 items-center md:grid-cols-none md:grid-rows-none p-2 relative">

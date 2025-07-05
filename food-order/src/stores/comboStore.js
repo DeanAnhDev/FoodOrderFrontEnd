@@ -15,7 +15,7 @@ export const useComboStore = defineStore("combo", {
       this.error = null;
       try {
         const response = await getCombos();
-        this.combos = response.data.items;
+        this.combos = response.data;
       } catch (err) {
         this.error = "Không thể tải combo!";
         console.error(err);
