@@ -43,10 +43,11 @@
               </p>
 
               <div class="mt-3 flex justify-center">
-                <button v-if="item.quantity > 0" @click="addToCart(item)"
+                <button v-if="item.quantity > 0" @click="() => handleAddToCart(item)"
                   class="w-full py-1 md:py-3 bg-red-600 text-white rounded-lg md:rounded-full font-semibold text-base hover:bg-red-700 transition-colors duration-300 cursor-pointer">
                   Thêm vào giỏ hàng
                 </button>
+
                 <span v-else
                   class="w-full py-1 md:py-3 bg-gray-400 text-white rounded-lg md:rounded-full font-semibold text-base text-center cursor-not-allowed">
                   Hết hàng
@@ -68,6 +69,12 @@ import { useComboStore } from '@/stores/comboStore'
 import { Info } from 'lucide-vue-next'
 import { formattedPrice } from '@/utils/formart'
 import { useRouter } from 'vue-router'
+import { useCartStore } from '@/stores/cartStore'
+import { useToast } from 'vue-toastification'
+const toast = useToast()
+
+const cartStore = useCartStore()
+
 const comboStore = useComboStore()
 
 const router = useRouter()
@@ -83,6 +90,15 @@ const goToDetail = (comboSlug) => {
       comboSlug
     },
   })
+}
+const handleAddToCart = async (item) => {
+  try {
+    await cartStore.addToCart({ comboId: item.comboId, quantity: 1 })
+    toast.success('Đã thêm vào giỏ hàng!')
+  } catch (error) {
+    toast.error('Không thể thêm vào giỏ hàng!')
+    console.error('Thêm giỏ hàng lỗi:', error)
+  }
 }
 
 </script>

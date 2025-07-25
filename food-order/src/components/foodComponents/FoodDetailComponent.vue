@@ -54,10 +54,11 @@
 
             <!-- Add to Cart Button -->
             <div class="mt-3 flex justify-center">
-              <button v-if="food.quantity > 0" @click="addToCart(item)"
+              <button v-if="food.quantity > 0" @click="addToCart"
                 class="w-full md:w-auto px-4 py-2 md:py-3 bg-red-600 text-white rounded-lg md:rounded-full font-semibold text-base hover:bg-red-700 transition duration-300 cursor-pointer text-center">
                 Thêm vào giỏ hàng
               </button>
+
               <span v-else
                 class="w-full md:w-auto px-4 py-2 md:py-3 bg-gray-400 text-white rounded-lg md:rounded-full font-semibold text-base text-center cursor-not-allowed">
                 Hết hàng
@@ -80,6 +81,11 @@ import { useRoute } from 'vue-router'
 import { useFoodBySlugStore } from '@/stores/foodStore'
 import { formattedPrice } from '@/utils/formart'
 import { ref } from 'vue'
+import { useCartStore } from '@/stores/cartStore'
+import { useToast } from 'vue-toastification'
+
+const cartStore = useCartStore()
+const toast = useToast()
 
 const route = useRoute()
 const foodBySlugStore = useFoodBySlugStore()
@@ -105,6 +111,21 @@ const increase = () => {
 
 const decrease = () => {
   if (quantity.value > 1) quantity.value--
+}
+
+
+const addToCart = async () => {
+  if (!food.value?.foodId || quantity.value <= 0) {
+    toast.error('Dữ liệu món ăn không hợp lệ.')
+    return
+  }
+
+  try {
+    await cartStore.addToCart({ foodId: food.value.foodId, quantity: quantity.value })
+    toast.success('Đã thêm vào giỏ hàng!')
+  } catch (error) {
+    toast.error('Thêm vào giỏ hàng thất bại!')
+  }
 }
 
 </script>
