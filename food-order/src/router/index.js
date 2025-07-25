@@ -10,6 +10,7 @@ import FoodDetailView from '@/views/FoodDetailView.vue'
 import FoodInCategoryView from '@/views/FoodInCategoryView.vue'
 import ComboDetailView from '@/views/ComboDetailView.vue'
 import Test from '@/views/Test.vue'
+import CartView from '@/views/CartView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -58,7 +59,7 @@ const router = createRouter({
     {
       path: '/categories/:categorySlug/combo-detail/:comboSlug',
       name: 'ComboDetail',
-     component: ComboDetailView,
+      component: ComboDetailView,
       props: true,
     },
     //combo-2
@@ -75,13 +76,29 @@ const router = createRouter({
       props: true,
     },
 
-
     {
       path: '/test',
       component: Test,
       props: true,
     },
+
+    {
+      path: '/cart',
+      name: 'Cart',
+      component: CartView,
+        meta: { requiresAuth: true }  
+    },
   ],
 })
 
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const token = localStorage.getItem('accessToken') // hoặc kiểm tra từ store nếu có
+
+  if (requiresAuth && !token) {
+    next({ path: '/login' }) // Chuyển hướng luôn
+  } else {
+    next() // Cho phép tiếp tục
+  }
+})
 export default router
