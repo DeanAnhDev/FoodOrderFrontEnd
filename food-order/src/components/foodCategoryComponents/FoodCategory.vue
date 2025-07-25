@@ -6,7 +6,6 @@
     <div class="flex-grow h-0.5 bg-gray-300 mr-5"></div>
   </section>
   <section v-bind="$attrs" class="mb-10">
-    <p v-if="categoryStore.loading" class="text-center text-gray-500">Đang tải...</p>
     <p v-if="categoryStore.error" class="text-center text-red-500">{{ categoryStore.error }}</p>
 
     <div v-if="categoryStore.categories.length" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 m-2 gap-5">
@@ -18,7 +17,7 @@
       >
         <div class="relative overflow-hidden rounded-t-lg aspect-[4/3]">
           <img
-            :src="`${IMG_BASE_URL}${category.imageUrl}`"
+            :src="`${category.images.url}`"
             alt="Hình ảnh món ăn"
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
           />
@@ -35,7 +34,6 @@
 import { onMounted } from 'vue'
 import { useCategoryStore } from '@/stores/categoryStore'
 import { ChevronRight } from 'lucide-vue-next'
-import { IMG_BASE_URL } from '../../config'
 import { useRouter } from 'vue-router'
 
 const categoryStore = useCategoryStore()
@@ -48,4 +46,5 @@ const goToCategory = (categorySlug) => {
 onMounted(() => {
   categoryStore.fetchCategories()
 })
+
 </script>
