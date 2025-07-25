@@ -21,6 +21,8 @@
           <h2 class="text-3xl md:text-3xl font-bold items-center uppercase">{{ comboWithFoods.comboName }}</h2>
           <p class="text-3xl md:text-3xl font-semibold uppercase ">{{ formattedPrice(comboWithFoods.price) }}</p>
         </div>
+        <p class="text-gray-700 mt-4 px-4 lg:px-0 lg:pb-4 font-semibold uppercase ">Số lượng: {{ comboWithFoods.quantity
+        }}</p>
         <p class="text-gray-700 mt-4 px-4 lg:px-0 lg:pb-4">{{ comboWithFoods.description }}</p>
 
 
@@ -31,7 +33,8 @@
           <ul class="mb-6">
             <li v-for="detail in comboWithFoods.comboDetails">
               <div class="px-4 lg:px-0 flex my-5 gap-3">
-                <img v-if="detail.food.images?.url" :src="`${detail.food.images.url}`" alt="Food image" class="w-[100px] h-[100px]" />
+                <img v-if="detail.food.images?.url" :src="`${detail.food.images.url}`" alt="Food image"
+                  class="w-[100px] h-[100px]" />
                 <div class=" flex flex-col justify-center text-xl ">
                   <strong>{{ detail.food.foodName }}</strong>
                   <p>({{ detail.quantity }} Phần)</p>
@@ -62,22 +65,31 @@
 
 
               <!-- Plus Button -->
-              <button @click="increase" class="w-9 h-9 flex items-center justify-center border border-gray-600 rounded-full text-gray-800 
-                 hover:bg-gray-100 transition cursor-pointer">
+              <button @click="increase" :disabled="comboWithFoods.quantity === 0 || quantity >= comboWithFoods.quantity" class="w-9 h-9 flex items-center justify-center border border-gray-600 rounded-full text-gray-800 
+    transition cursor-pointer
+    hover:bg-gray-100
+    disabled:opacity-50 disabled:cursor-not-allowed">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
               </button>
+
+
             </div>
 
             <!-- Add to Cart Button -->
-            <div class="flex-grow md:flex-grow-0">
-              <button @click="addToCart(food)" class="w-full py-3 bg-red-600 text-white rounded-full font-semibold text-lg 
-                 hover:bg-red-700 transition-colors duration-300 cursor-pointer md:w-auto md:px-6 lg:text-sm">
-                Thêm vào giỏ hàng <i class="fas fa-shopping-cart ml-2"></i>
+            <div class="mt-3 flex justify-center">
+              <button v-if="comboWithFoods.quantity > 0" @click="addToCart(item)"
+                class="w-full md:w-auto px-4 py-2 md:py-3 bg-red-600 text-white rounded-lg md:rounded-full font-semibold text-base hover:bg-red-700 transition duration-300 cursor-pointer text-center">
+                Thêm vào giỏ hàng
               </button>
+              <span v-else
+                class="w-full md:w-auto px-4 py-2 md:py-3 bg-gray-400 text-white rounded-lg md:rounded-full font-semibold text-base text-center cursor-not-allowed">
+                Hết hàng
+              </span>
             </div>
+
           </div>
         </div>
       </div>
@@ -116,8 +128,12 @@ onMounted(() => {
 const quantity = ref(1)
 
 const increase = () => {
-  quantity.value++
+  if (quantity.value < comboWithFoods.value.quantity) {
+    quantity.value++
+  }
 }
+
+
 
 const decrease = () => {
   if (quantity.value > 1) quantity.value--

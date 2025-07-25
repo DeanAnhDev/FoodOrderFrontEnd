@@ -19,8 +19,9 @@
           <h2 class="text-2xl md:text-3xl font-bold items-center uppercase">{{ food.foodName }}</h2>
           <p class="text-2xl md:text-3xl font-semibold uppercase ">{{ formattedPrice(food.price) }}</p>
         </div>
+        <p class="text-gray-700 my-4 font-semibold uppercase">Số lượng: {{ food.quantity }}</p>
         <p class="text-gray-700 my-4">{{ food.description }}</p>
-  
+
         <!-- Wrapper cho mobile fixed -->
         <div
           class="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-[0_-2px_10px_rgba(0,0,0,0.1)]  md:static md:shadow-none lg:p-0">
@@ -35,25 +36,32 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                 </svg>
               </button>
-  
+
               <span class="text-lg font-semibold min-w-[20px] text-center">{{ quantity }}</span>
-  
+
+
               <!-- Plus Button -->
-              <button @click="increase" class="w-9 h-9 flex items-center justify-center border border-gray-600 rounded-full text-gray-800 
-                 hover:bg-gray-100 transition cursor-pointer">
+              <button @click="increase" :disabled="food.quantity === 0 || quantity >= food.quantity" class="w-9 h-9 flex items-center justify-center border border-gray-600 rounded-full text-gray-800 
+    transition cursor-pointer
+    hover:bg-gray-100
+    disabled:opacity-50 disabled:cursor-not-allowed">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
               </button>
             </div>
-  
+
             <!-- Add to Cart Button -->
-            <div class="flex-grow md:flex-grow-0">
-              <button @click="addToCart(food)" class="w-full py-3 bg-red-600 text-white rounded-full font-semibold text-lg 
-                 hover:bg-red-700 transition-colors duration-300 cursor-pointer md:w-auto md:px-6 lg:text-sm">
-                Thêm vào giỏ hàng <i class="fas fa-shopping-cart ml-2"></i>
+            <div class="mt-3 flex justify-center">
+              <button v-if="food.quantity > 0" @click="addToCart(item)"
+                class="w-full md:w-auto px-4 py-2 md:py-3 bg-red-600 text-white rounded-lg md:rounded-full font-semibold text-base hover:bg-red-700 transition duration-300 cursor-pointer text-center">
+                Thêm vào giỏ hàng
               </button>
+              <span v-else
+                class="w-full md:w-auto px-4 py-2 md:py-3 bg-gray-400 text-white rounded-lg md:rounded-full font-semibold text-base text-center cursor-not-allowed">
+                Hết hàng
+              </span>
             </div>
           </div>
         </div>
@@ -88,8 +96,12 @@ onMounted(() => {
 const quantity = ref(1)
 
 const increase = () => {
-  quantity.value++
+  if (quantity.value < food.value.quantity) {
+    quantity.value++
+  }
 }
+
+
 
 const decrease = () => {
   if (quantity.value > 1) quantity.value--

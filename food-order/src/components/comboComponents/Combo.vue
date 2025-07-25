@@ -6,7 +6,7 @@
     <div class="flex-grow h-0.5 bg-gray-300 mr-5"></div>
   </section>
   <section v-bind="$attrs" class="mb-10">
- 
+
 
     <p v-if="comboStore.error" class="text-center text-red-500">{{ comboStore.error }}</p>
 
@@ -22,7 +22,6 @@
             <!-- Image -->
             <div class="col-span-5 md:col-span-1 overflow-hidden md:rounded-t-lg relative aspect-[4/3]">
               <img v-if="item.images?.url" :src="`${item.images.url}`" :alt="`Hình ảnh ${item.comboName}`"
-           
                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 @click="goToDetail(item.slug)" />
             </div>
@@ -44,11 +43,16 @@
               </p>
 
               <div class="mt-3 flex justify-center">
-                <button @click="addToCart(item)"
+                <button v-if="item.quantity > 0" @click="addToCart(item)"
                   class="w-full py-1 md:py-3 bg-red-600 text-white rounded-lg md:rounded-full font-semibold text-base hover:bg-red-700 transition-colors duration-300 cursor-pointer">
                   Thêm vào giỏ hàng
                 </button>
+                <span v-else
+                  class="w-full py-1 md:py-3 bg-gray-400 text-white rounded-lg md:rounded-full font-semibold text-base text-center cursor-not-allowed">
+                  Hết hàng
+                </span>
               </div>
+
             </div>
           </div>
         </li>
