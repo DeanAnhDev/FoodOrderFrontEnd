@@ -44,7 +44,6 @@
         </div>
       </li>
     </ul>
-
     <p v-else class="text-center text-gray-500">Danh mục này hiện chưa có sản phẩm.</p>
   </div>
 </template>
@@ -54,6 +53,11 @@ import { computed } from 'vue'
 import { Info } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { formattedPrice } from '@/utils/formart'
+import { useCartStore } from '@/stores/cartStore'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
+const cartStore = useCartStore()
 
 const props = defineProps({
   category: Object,
@@ -71,7 +75,7 @@ const combinedItems = computed(() => {
       description: food.description,
       slug: food.slug,
       type: 'food',
-      quantity: food.quantity ?? 0, // 👈 thêm vào
+      quantity: food.quantity ?? 0,
     })) || []
 
   const combos =
@@ -83,7 +87,7 @@ const combinedItems = computed(() => {
       description: combo.description,
       slug: combo.slug,
       type: 'combo',
-      quantity: combo.quantity ?? 0, // 👈 thêm vào
+      quantity: combo.quantity ?? 0,
     })) || []
 
   return [...foods, ...combos]
@@ -101,7 +105,26 @@ const goToDetail = (categorySlug, itemSlug, type) => {
 }
 
 const addToCart = (item) => {
-  console.log('Đã thêm vào giỏ hàng:', item)
-}
+  if (!item || !item.type || !item.id) {
+    toast.error('Không thể thêm sản phẩm vào giỏ hàng.')
+    return
+  }
 
+  const payload = {
+    quantity: 1,
+  }
+
+  if (item.type === 'food') {
+    payload.foodId = item.id
+  } else if (item.type === 'combo') {
+    payload.comboId = item.id
+  }
+
+  try {
+    cartStore.addToCart(payload)
+    toast.success('Đã thêm vào giỏ hàng!')
+  } catch (error) {
+    toast.error('Thêm vào giỏ hàng thất bại!')
+  }
+}
 </script>
