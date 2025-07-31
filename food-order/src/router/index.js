@@ -94,7 +94,9 @@ const router = createRouter({
     },
     {
       path: '/account',
+      name: 'account',
       component: AccountView,
+      meta: { requiresAuth: true },
       children: [
         { path: '', redirect: '/account/info' },
         { path: 'info', component: AccountInfo },
@@ -119,12 +121,12 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
-  const token = localStorage.getItem('accessToken') // hoặc kiểm tra từ store nếu có
+  const token = localStorage.getItem('accessToken')
 
   if (requiresAuth && !token) {
-    next({ path: '/login' }) // Chuyển hướng luôn
+    next({ path: '/login' })
   } else {
-    next() // Cho phép tiếp tục
+    next() 
   }
 })
 export default router
