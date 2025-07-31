@@ -11,6 +11,9 @@ import FoodInCategoryView from '@/views/FoodInCategoryView.vue'
 import ComboDetailView from '@/views/ComboDetailView.vue'
 import Test from '@/views/Test.vue'
 import CartView from '@/views/CartView.vue'
+import AccountView from '@/views/AccountView.vue'
+import AccountInfo from '@/components/accountComponents/AccountInfo.vue'
+import ChangePassword from '@/components/accountComponents/ChangePassword.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -86,13 +89,28 @@ const router = createRouter({
       path: '/cart',
       name: 'Cart',
       component: CartView,
-        meta: { requiresAuth: true }  
+      meta: { requiresAuth: true },
     },
+    {
+      path: '/account',
+      component: AccountView,
+      children: [
+        { path: '', redirect: '/account/info' },
+        { path: 'info', component: AccountInfo },
+        // { path: 'orders', component: () => import('@/views/account/Orders.vue') },
+        // { path: 'favorites', component: () => import('@/views/account/Favorites.vue') },
+        // { path: 'addresses', component: () => import('@/views/account/Addresses.vue') },
+        { path: 'password', component: ChangePassword },
+        // { path: 'delete', component: () => import('@/views/account/DeleteAccount.vue') },
+      ],
+    },
+
+
   ],
 })
 
 router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
   const token = localStorage.getItem('accessToken') // hoặc kiểm tra từ store nếu có
 
   if (requiresAuth && !token) {
