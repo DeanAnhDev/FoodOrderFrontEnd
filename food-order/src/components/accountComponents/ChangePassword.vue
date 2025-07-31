@@ -6,16 +6,9 @@
       <!-- Mật khẩu hiện tại -->
       <div class="flex flex-col relative">
         <label class="text-sm text-gray-600 mb-1">Mật khẩu hiện tại *</label>
-        <input
-          :type="showOldPassword ? 'text' : 'password'"
-          v-model="form.oldPassword"
-          required
-          class="border-b border-gray-300 py-2 pr-10 focus:outline-none focus:border-red-500"
-        />
-        <span
-          @click="showOldPassword = !showOldPassword"
-          class="absolute right-2 top-8 cursor-pointer text-gray-500"
-        >
+        <input :type="showOldPassword ? 'text' : 'password'" v-model="form.oldPassword" autocomplete="current-password"
+          required class="border-b border-gray-300 py-2 pr-10 focus:outline-none focus:border-red-500" />
+        <span @click="showOldPassword = !showOldPassword" class="absolute right-2 top-8 cursor-pointer text-gray-500">
           👁️
         </span>
       </div>
@@ -23,16 +16,9 @@
       <!-- Mật khẩu mới -->
       <div class="flex flex-col relative">
         <label class="text-sm text-gray-600 mb-1">Mật khẩu *</label>
-        <input
-          :type="showNewPassword ? 'text' : 'password'"
-          v-model="form.newPassword"
-          required
-          class="border-b border-gray-300 py-2 pr-10 focus:outline-none focus:border-red-500"
-        />
-        <span
-          @click="showNewPassword = !showNewPassword"
-          class="absolute right-2 top-8 cursor-pointer text-gray-500"
-        >
+        <input :type="showNewPassword ? 'text' : 'password'" v-model="form.newPassword" autocomplete="new-password"
+          required class="border-b border-gray-300 py-2 pr-10 focus:outline-none focus:border-red-500" />
+        <span @click="showNewPassword = !showNewPassword" class="absolute right-2 top-8 cursor-pointer text-gray-500">
           👁️
         </span>
       </div>
@@ -40,26 +26,19 @@
       <!-- Xác nhận mật khẩu -->
       <div class="flex flex-col relative">
         <label class="text-sm text-gray-600 mb-1">Xác nhận mật khẩu *</label>
-        <input
-          :type="showConfirmPassword ? 'text' : 'password'"
-          v-model="form.confirmPassword"
-          required
-          class="border-b border-gray-300 py-2 pr-10 focus:outline-none focus:border-red-500"
-        />
-        <span
-          @click="showConfirmPassword = !showConfirmPassword"
-          class="absolute right-2 top-8 cursor-pointer text-gray-500"
-        >
+        <input :type="showConfirmPassword ? 'text' : 'password'" v-model="form.confirmPassword"
+          autocomplete="new-password" required
+          class="border-b border-gray-300 py-2 pr-10 focus:outline-none focus:border-red-500" />
+        <span @click="showConfirmPassword = !showConfirmPassword"
+          class="absolute right-2 top-8 cursor-pointer text-gray-500">
           👁️
         </span>
       </div>
 
       <!-- Nút gửi -->
-      <button
-        type="submit"
-        class="bg-red-600 hover:bg-red-700 text-white w-full py-3 rounded-full font-semibold shadow-md"
-      >
-        Đổi mật khẩu
+      <button type="submit" :disabled="userStore.loading"
+        class="bg-red-600 hover:bg-red-700 text-white w-full py-3 rounded-full font-semibold shadow-md disabled:opacity-50">
+        {{ userStore.loading ? 'Đang xử lý...' : 'Đổi mật khẩu' }}
       </button>
     </form>
   </div>
@@ -67,6 +46,11 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
+import { useUserStore } from '@/stores/userStore'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
+const userStore = useUserStore()
 
 const form = reactive({
   oldPassword: '',
@@ -78,14 +62,33 @@ const showOldPassword = ref(false)
 const showNewPassword = ref(false)
 const showConfirmPassword = ref(false)
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (form.newPassword !== form.confirmPassword) {
-    alert('Mật khẩu xác nhận không khớp!')
+    toast.error('❌ Mật khẩu xác nhận không khớp!')
     return
   }
 
-  // Gửi API đổi mật khẩu ở đây
-  console.log('Đổi mật khẩu với:', form)
-  alert('Đổi mật khẩu thành công!')
+  try {
+    await userStore.changeUserPassword({
+      currentPassword: form.oldPassword,
+      newPassword: form.newPassword,
+      confirmNewPassword: form.confirmPassword,
+    })
+
+    toast.success('✅ Đổi mật khẩu thành công!')
+    form.oldPassword = ''
+    form.newPassword = ''
+    form.confirmPassword = ''
+  } catch (err) {
+    // Lấy thông báo lỗi từ response nếu có
+    const message =
+      err.response?.data?.message ||
+      err.response?.data ||
+      err.message ||
+      '❌ Có lỗi xảy ra khi đổi mật khẩu!'
+
+    toast.error(`❌ ${message}`)
+  }
 }
+
 </script>

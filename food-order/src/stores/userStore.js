@@ -1,6 +1,6 @@
 // 📁 src/stores/userStore.js
 import { defineStore } from 'pinia'
-import { getCurrentUser, updateUser } from '@/services/userService'
+import { getCurrentUser, updateUser, changePassword } from '@/services/userService'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -30,6 +30,21 @@ export const useUserStore = defineStore('user', {
       } catch (err) {
         throw err
       }
-    }
-  }
+    },
+
+    async changeUserPassword(data) {
+      this.loading = true
+      this.error = null
+
+      try {
+        const res = await changePassword(data)
+        return res // 👈 BẠT BUỘC PHẢI CÓ `return`
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Lỗi không xác định'
+        throw err
+      } finally {
+        this.loading = false
+      }
+    },
+  },
 })

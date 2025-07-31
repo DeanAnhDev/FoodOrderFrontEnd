@@ -9,3 +9,8 @@ export const getCurrentUser = () => {
 export const updateUser = (data) => {
   return axiosClient.put('/User', data)
 }
+
+export const changePassword = (data) => {
+  return axiosClient.put('/User/change-password', data)
+}
+

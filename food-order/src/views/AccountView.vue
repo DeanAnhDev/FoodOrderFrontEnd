@@ -6,6 +6,7 @@
         <img src="@/assets/img/logo.png" alt="Logo" class="w-16 h-16 mb-2" />
         <h2 class="text-xl font-bold text-center">Xin chào,<br />{{ userName }}!</h2>
         <RouterLink to="/logout" class="text-sm underline">Đăng xuất</RouterLink>
+
       </div>
       <ul class="space-y-2 mt-4 text-sm">
         <li>

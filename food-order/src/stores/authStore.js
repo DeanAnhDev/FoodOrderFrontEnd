@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { loginUser, registerUser } from '@/services/authService'
+import { loginUser, registerUser, logoutUser } from '@/services/authService'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -9,6 +9,7 @@ export const useAuthStore = defineStore('auth', {
     accessToken: null,
     refreshToken: null,
   }),
+
   actions: {
     async login(loginData) {
       this.loading = true
@@ -43,7 +44,19 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    logout() {
+    async logout() {
+      try {
+        const accessToken = this.accessToken || localStorage.getItem('accessToken')
+        const refreshToken = this.refreshToken || localStorage.getItem('refreshToken')
+
+        if (accessToken && refreshToken) {
+          await logoutUser({ accessToken, refreshToken }) // Gọi API logout
+        }
+      } catch (err) {
+        console.warn('API logout thất bại, vẫn tiếp tục xóa local:', err)
+      }
+
+      // Dù API fail thì vẫn xóa token và reset store
       this.accessToken = null
       this.refreshToken = null
       this.message = ''
@@ -53,4 +66,3 @@ export const useAuthStore = defineStore('auth', {
     },
   },
 })
-

@@ -7,3 +7,7 @@ export const registerUser = async (userData) => {
 export const loginUser = async (loginData) => {
   return axiosClient.post('/Auth/login', loginData)
 }
+
+export const logoutUser = (data) => {
+  return axiosClient.post('/Auth/logout', data)
+}
