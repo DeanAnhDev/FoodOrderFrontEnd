@@ -47,7 +47,10 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useUserStore } from '@/stores/userStore'
+import { useAuthStore } from '@/stores/authStore'
 import { useToast } from 'vue-toastification'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 const toast = useToast()
 const userStore = useUserStore()
@@ -64,7 +67,7 @@ const showConfirmPassword = ref(false)
 
 const handleSubmit = async () => {
   if (form.newPassword !== form.confirmPassword) {
-    toast.error('❌ Mật khẩu xác nhận không khớp!')
+    toast.error('Mật khẩu xác nhận không khớp!')
     return
   }
 
@@ -75,20 +78,20 @@ const handleSubmit = async () => {
       confirmNewPassword: form.confirmPassword,
     })
 
-    toast.success('✅ Đổi mật khẩu thành công!')
-    form.oldPassword = ''
-    form.newPassword = ''
-    form.confirmPassword = ''
+    toast.success('Đổi mật khẩu thành công!')
+
+    const authStore = useAuthStore()
+    await authStore.logout()
+
+    router.push('/login')
   } catch (err) {
-    // Lấy thông báo lỗi từ response nếu có
     const message =
       err.response?.data?.message ||
       err.response?.data ||
       err.message ||
-      '❌ Có lỗi xảy ra khi đổi mật khẩu!'
-
-    toast.error(`❌ ${message}`)
+    toast.error(` ${message}`)
   }
 }
+
 
 </script>

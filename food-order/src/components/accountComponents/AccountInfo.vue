@@ -57,7 +57,6 @@ const form = ref({
 onMounted(async () => {
   await fetchUser()
 
-  // Copy dữ liệu từ userStore vào form khi đã có user
   if (userStore.user) {
     form.value.fullName = userStore.user.fullName
     form.value.phoneNumber = userStore.user.phoneNumber
@@ -73,12 +72,11 @@ const submit = async () => {
       email: form.value.email,
     })
 
-    // Đồng bộ lại user từ backend để sidebar cũng được cập nhật
     await fetchUser()
 
     toast.success('🎉 Cập nhật thành công!')
   } catch (err) {
-    toast.error('❌ Cập nhật thất bại!')
+    toast.error(' Cập nhật thất bại!')
   }
 }
 </script>
