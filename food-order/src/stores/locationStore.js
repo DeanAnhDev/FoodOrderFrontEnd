@@ -5,6 +5,7 @@ import {
   deleteLocation,
   createLocation,
   updateLocation,
+  updateLocationIsDefault,
 } from '@/services/locationService'
 
 export const useLocationStore = defineStore('location', {
@@ -75,9 +76,23 @@ export const useLocationStore = defineStore('location', {
       this.error = null
       try {
         await deleteLocation(id)
-        this.locations = this.locations.filter(loc => loc.id !== id)
+        this.locations = this.locations.filter((loc) => loc.id !== id)
       } catch (err) {
         this.error = err.response?.data?.message || 'Không thể xóa địa chỉ'
+        throw err
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async setDefaultLocation(id) {
+      this.loading = true
+      this.error = null
+      try {
+        await updateLocationIsDefault(id, true)
+        await this.fetchLocationsByUser()
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Không thể đặt mặc định'
         throw err
       } finally {
         this.loading = false

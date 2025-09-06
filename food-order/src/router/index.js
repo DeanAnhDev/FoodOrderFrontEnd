@@ -14,6 +14,7 @@ import CartView from '@/views/CartView.vue'
 import AccountView from '@/views/AccountView.vue'
 import AccountInfo from '@/components/accountComponents/AccountInfo.vue'
 import ChangePassword from '@/components/accountComponents/ChangePassword.vue'
+import Location from '@/components/accountComponents/Location.vue'
 import { useAuthStore } from '@/stores/authStore'
 
 const router = createRouter({
@@ -102,7 +103,7 @@ const router = createRouter({
         { path: 'info', component: AccountInfo },
         // { path: 'orders', component: () => import('@/views/account/Orders.vue') },
         // { path: 'favorites', component: () => import('@/views/account/Favorites.vue') },
-        // { path: 'addresses', component: () => import('@/views/account/Addresses.vue') },
+        { path: 'addresses', component: Location },
         { path: 'password', component: ChangePassword },
         // { path: 'delete', component: () => import('@/views/account/DeleteAccount.vue') },
       ],
@@ -126,7 +127,7 @@ router.beforeEach((to, from, next) => {
   if (requiresAuth && !token) {
     next({ path: '/login' })
   } else {
-    next() 
+    next()
   }
 })
 export default router

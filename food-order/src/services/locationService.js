@@ -19,3 +19,9 @@ export const createLocation = async (data) => {
 export const updateLocation = async (data) => {
   return axiosClient.put(`/Location`, data)
 }
+
+export const updateLocationIsDefault = async (id, isDefault) => {
+  return axiosClient.patch('/Location', null, {
+    params: { id, isDefault },
+  })
+}
