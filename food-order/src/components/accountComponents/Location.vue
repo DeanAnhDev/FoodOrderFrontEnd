@@ -138,11 +138,11 @@ const handleSave = async (data) => {
     if (selected.value?.id) {
       // update
       await store.updateLocation({ ...payload, id: selected.value.id })
-      toast.success("Cập nhật địa chỉ thành công.")
+      // toast.success("Cập nhật địa chỉ thành công.")
     } else {
       // create
       await store.createLocation(payload)
-      toast.success("Thêm địa chỉ thành công.")
+      // toast.success("Thêm địa chỉ thành công.")
     }
 
     closeAddModal()

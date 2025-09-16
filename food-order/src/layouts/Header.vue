@@ -35,9 +35,18 @@
         <router-link :to="{ name: 'account' }" class="font-title font-bold text-lg hover:text-title-hover">
           <CircleUserRound class="w-8 h-8" />
         </router-link>
-        <router-link to="/cart" class="font-title font-bold text-lg hover:text-title-hover">
-          <ShoppingBasket class="w-9 h-9" />
+        <router-link to="/cart" class="relative inline-block">
+          <!-- Icon giỏ hàng -->
+          <ShoppingBasket class="w-9 h-9 text-gray-700 hover:text-title-hover transition-colors duration-200" />
+
+          <!-- Badge số lượng -->
+          <span v-if="cartStore.totalQuantity > 0" class="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-red-600 
+           text-white text-[11px] font-bold rounded-full min-w-[20px] h-5 
+           px-1 flex items-center justify-center shadow-md ring-2 ring-white">
+            {{ cartStore.totalQuantity }}
+          </span>
         </router-link>
+
 
       </div>
     </div>
@@ -51,6 +60,15 @@
 import { ref, watch } from 'vue'
 import { ShoppingBasket, CircleUserRound } from 'lucide-vue-next'
 import MobileMenu from '../components/headerComponents/MobileMenu.vue'
+import { useCartStore } from '@/stores/cartStore'
+import { onMounted } from 'vue'
+const cartStore = useCartStore()
+
+// Gọi fetchCart khi load layout/header
+onMounted(() => {
+  cartStore.fetchCart()
+})
+
 
 const isMenuOpen = ref(false)
 
