@@ -15,9 +15,23 @@
           <span class="w-3 h-7 bg-red-600 inline-block"></span>
         </div>
 
-        <div class="flex justify-between mt-8 gap-2">
+        <div class="flex flex-col justify-between mt-8 gap-2">
           <h2 class="text-2xl md:text-3xl font-bold items-center uppercase">{{ food.foodName }}</h2>
-          <p class="text-2xl md:text-3xl font-semibold uppercase ">{{ formattedPrice(food.price) }}</p>
+          <div class="flex items-center space-x-3">
+            <span v-if="food?.promotion?.isActive" class="text-gray-400 line-through text-lg md:text-2xl">
+              {{ formattedPrice(food.price) }}
+            </span>
+            <span v-if="food?.promotion?.isActive"
+              class="bg-red-600 text-white text-xs md:text-sm px-2 py-1 rounded-md font-semibold mr-2">
+              {{ food.promotion.type === 'Percentage' ? `${food.promotion.discountAmount}% GIẢM` :
+                `${formattedPrice(food.promotion.discountAmount)} GIẢM` }}
+            </span>
+          </div>
+
+          <span class="text-red-600 font-semibold text-2xl md:text-3xl">
+            {{ formattedPrice(finalPrice) }}
+          </span>
+
         </div>
         <p class="text-gray-700 my-4 font-semibold uppercase">Số lượng: {{ food.quantity }}</p>
         <p class="text-gray-700 my-4">{{ food.description }}</p>
@@ -98,6 +112,18 @@ onMounted(() => {
     foodBySlugStore.fetchFoodBySlug(foodSlug)
   }
 })
+
+
+const finalPrice = computed(() => {
+  if (!food.value) return 0
+  const promo = food.value.promotion
+  if (promo?.isActive) {
+    if (promo.type === 'Percentage') return food.value.price * (1 - promo.discountAmount / 100)
+    if (promo.type === 'Amount') return food.value.price - promo.discountAmount
+  }
+  return food.value.price
+})
+
 
 const quantity = ref(1)
 

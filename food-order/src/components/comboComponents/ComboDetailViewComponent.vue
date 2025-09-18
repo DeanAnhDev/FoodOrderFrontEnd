@@ -17,9 +17,25 @@
           <span class="w-3 h-7 bg-red-600 inline-block"></span>
         </div>
 
-        <div class="flex justify-between mt-8 gap-2 px-4 lg:px-0">
+        <div class="flex flex-col justify-between mt-8 gap-2 px-4 lg:px-0">
           <h2 class="text-3xl md:text-3xl font-bold items-center uppercase">{{ comboWithFoods.comboName }}</h2>
-          <p class="text-3xl md:text-3xl font-semibold uppercase ">{{ formattedPrice(comboWithFoods.price) }}</p>
+
+
+          <div class="flex items-center space-x-3">
+            <span v-if="comboWithFoods?.promotion?.isActive" class="text-gray-400 line-through text-lg md:text-2xl">
+              {{ formattedPrice(comboWithFoods.price) }}
+            </span>
+            <span v-if="comboWithFoods?.promotion?.isActive"
+              class="bg-red-600 text-white text-xs md:text-sm px-2 py-1 rounded-md font-semibold mr-2">
+              {{ comboWithFoods.promotion.type === 'Percentage' ? `${comboWithFoods.promotion.discountAmount}% GIẢM` :
+                `${formattedPrice(comboWithFoods.promotion.discountAmount)} GIẢM` }}
+            </span>
+          </div>
+
+          <span class="text-red-600 font-semibold text-2xl md:text-3xl">
+            {{ formattedPrice(finalPrice) }}
+          </span>
+
         </div>
         <p class="text-gray-700 mt-4 px-4 lg:px-0 lg:pb-4 font-semibold uppercase ">Số lượng: {{ comboWithFoods.quantity
         }}</p>
@@ -65,7 +81,8 @@
 
 
               <!-- Plus Button -->
-              <button @click="increase" :disabled="comboWithFoods.quantity === 0 || quantity >= comboWithFoods.quantity" class="w-9 h-9 flex items-center justify-center border border-gray-600 rounded-full text-gray-800 
+              <button @click="increase" :disabled="comboWithFoods.quantity === 0 || quantity >= comboWithFoods.quantity"
+                class="w-9 h-9 flex items-center justify-center border border-gray-600 rounded-full text-gray-800 
     transition cursor-pointer
     hover:bg-gray-100
     disabled:opacity-50 disabled:cursor-not-allowed">
@@ -128,6 +145,15 @@ onMounted(() => {
   }
 })
 
+const finalPrice = computed(() => {
+  if (!comboWithFoods.value) return 0
+  const promo = comboWithFoods.value.promotion
+  if (promo?.isActive) {
+    if (promo.type === 'Percentage') return comboWithFoods.value.price * (1 - promo.discountAmount / 100)
+    if (promo.type === 'Amount') return comboWithFoods.value.price - promo.discountAmount
+  }
+  return comboWithFoods.value.price
+})
 
 const quantity = ref(1)
 

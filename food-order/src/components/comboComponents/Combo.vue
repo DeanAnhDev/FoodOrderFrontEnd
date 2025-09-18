@@ -21,21 +21,34 @@
 
             <!-- Image -->
             <div class="col-span-5 md:col-span-1 overflow-hidden md:rounded-t-lg relative aspect-[4/3]">
+              <span v-if="item.promotion?.isActive"
+                class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded z-10">
+                {{ getPromotionLabel(item) }}
+              </span>
               <img v-if="item.images?.url" :src="`${item.images.url}`" :alt="`Hình ảnh ${item.comboName}`"
                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 @click="goToDetail(item.slug)" />
             </div>
 
             <!-- Content -->
-            <div class="col-span-7 md:col-span-1 ml-2 md:ml-0 md:p-4 flex flex-col flex-grow">
+            <div class="col-span-7 md:col-span-1 ml-2 md:ml-0 md:p-2 flex flex-col flex-grow">
               <div class="flex md:justify-between flex-col md:flex-row">
                 <h2 class="text-base md:text-xl text-primary font-semibold w-3/5 break-words cursor-pointer"
                   @click="goToDetail(item.slug)">
                   {{ item.comboName }}
                 </h2>
-                <h2 class="text-base md:text-xl text-primary font-bold w-2/5 text-left md:text-right">
-                  {{ formattedPrice(item.price) }}
-                </h2>
+                <div class="flex flex-col md:items-end">
+                  <!-- Giá gốc nếu có promotion -->
+                  <span v-if="item.promotion?.isActive" class="text-gray-400 line-through text-sm md:text-base">
+                    {{ formattedPrice(item.price) }}
+                  </span>
+
+                  <!-- Giá sau giảm -->
+                  <span class="text-primary font-bold text-base md:text-xl">
+                    {{ formattedPrice(getFinalPrice(item)) }}
+                  </span>
+                </div>
+
               </div>
 
               <p class="text-gray-600 text-sm mt-2 line-clamp-1 md:line-clamp-2 flex-grow">
@@ -82,6 +95,27 @@ const router = useRouter()
 onMounted(() => {
   comboStore.fetchCombos()
 })
+
+
+const getFinalPrice = (item) => {
+  const promo = item.promotion
+  if (promo?.isActive) {
+    if (promo.type === 'Percentage') {
+      return item.price * (1 - promo.discountAmount / 100)
+    } else if (promo.type === 'Amount') {
+      return item.price - promo.discountAmount
+    }
+  }
+  return item.price
+}
+
+const getPromotionLabel = (item) => {
+  const promo = item.promotion
+  if (!promo?.isActive) return ''
+  if (promo.type === 'Percentage') return `Giảm ${promo.discountAmount}%`
+  if (promo.type === 'Amount') return `Giảm ${formattedPrice(promo.discountAmount)}`
+  return ''
+}
 
 const goToDetail = (comboSlug) => {
   router.push({
