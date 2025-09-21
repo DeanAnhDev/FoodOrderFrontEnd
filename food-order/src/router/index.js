@@ -15,6 +15,8 @@ import AccountView from '@/views/AccountView.vue'
 import AccountInfo from '@/components/accountComponents/AccountInfo.vue'
 import ChangePassword from '@/components/accountComponents/ChangePassword.vue'
 import Location from '@/components/accountComponents/Location.vue'
+import CheckoutView from '@/views/CheckoutView.vue'
+
 import { useAuthStore } from '@/stores/authStore'
 
 const router = createRouter({
@@ -92,6 +94,21 @@ const router = createRouter({
       name: 'Cart',
       component: CartView,
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/checkout',
+      name: 'Checkout',
+      component: CheckoutView,
+    },
+    {
+      path: '/checkout-success',
+      name: 'CheckoutSuccess',
+      component: () => import('@/views/CheckoutSuccess.vue'),
+    },
+    {
+      path: '/checkout-failed',
+      name: 'CheckoutFailed',
+      component: () => import('@/views/CheckoutFailed.vue'),
     },
     {
       path: '/account',
