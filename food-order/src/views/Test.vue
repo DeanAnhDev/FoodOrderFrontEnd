@@ -35,10 +35,7 @@
         <input v-model.number="itemValue" type="number" class="input" />
       </div>
 
-      <button
-        @click="estimateFee"
-        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
+      <button @click="estimateFee" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
         Tính phí
       </button>
 
@@ -132,7 +129,7 @@ async function estimateFee() {
         }
       ],
       payment_method: 'CASH',
-      remarks: 'Giao hàng nội thành Hồ Chí Minh',
+      remarks: 'Giao hàng nội thành Hà Nội',
       promo_code: 'AHMKM',
       items: [
         {
