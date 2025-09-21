@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-xl mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-6">CHI TIẾT TÀI KHOẢN</h1>
+    <h1 class="text-2xl font-bold mb-6">Chi tiết tài khoản</h1>
 
     <!-- Kiểm tra form có dữ liệu -->
     <form v-if="form" @submit.prevent="submit" class="space-y-5">

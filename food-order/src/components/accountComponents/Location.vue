@@ -25,36 +25,39 @@
     </div>
 
     <!-- Nếu có địa chỉ -->
-    <div v-else class="space-y-4">
-      <div v-for="addr in store.locations" :key="addr.id"
-        class="bg-white border border-gray-200 rounded-2xl shadow p-5 hover:shadow-lg transition">
-        <div class="mb-3">
-          <div class="flex items-center gap-2 text-gray-800 font-medium">
-            <MapPin class="w-5 h-5 text-red-600" />
-            {{ addr.address }}
+    <div v-else>
+      <!-- Scrollable list wrapper: giới hạn chiều cao để sidebar không bị kéo quá dài -->
+      <div class="space-y-4 max-h-[60vh] md:max-h-[50vh] overflow-y-auto pr-2">
+        <div v-for="addr in store.locations" :key="addr.id"
+          class="bg-white border border-gray-200 rounded-2xl shadow p-5 hover:shadow-lg transition">
+          <div class="mb-3">
+            <div class="flex items-center gap-2 text-gray-800 font-medium">
+              <MapPin class="w-5 h-5 text-red-600" />
+              {{ addr.address }}
+            </div>
+            <span v-if="addr.isDefault"
+              class="inline-flex items-center gap-1 mt-2 px-3 py-1 bg-red-100 text-red-700 rounded-lg text-xs font-medium">
+              <CheckCircle class="w-4 h-4" /> Địa chỉ mặc định
+            </span>
           </div>
-          <span v-if="addr.isDefault"
-            class="inline-flex items-center gap-1 mt-2 px-3 py-1 bg-red-100 text-red-700 rounded-lg text-xs font-medium">
-            <CheckCircle class="w-4 h-4" /> Địa chỉ mặc định
-          </span>
-        </div>
 
-        <div class="flex gap-3">
-          <button
-            class="flex items-center gap-1 px-3 py-1 bg-black hover:bg-gray-800 rounded-lg text-white text-sm cursor-pointer"
-            @click="openEditModal(addr)">
-            <Edit class="w-4 h-4" /> Sửa
-          </button>
-          <button
-            class="flex items-center gap-1 px-3 py-1 bg-red-100 hover:bg-red-200 rounded-lg text-red-600 text-sm cursor-pointer"
-            @click="deleteAddress(addr.id)">
-            <Trash class="w-4 h-4" /> Xoá
-          </button>
-          <button v-if="!addr.isDefault"
-            class="flex items-center gap-1 px-3 py-1 bg-red-50 hover:bg-red-100 rounded-lg text-red-600 text-sm cursor-pointer"
-            @click="setDefault(addr.id)">
-            <Star class="w-4 h-4" /> Đặt mặc định
-          </button>
+          <div class="flex gap-3">
+            <button
+              class="flex items-center gap-1 px-3 py-1 bg-black hover:bg-gray-800 rounded-lg text-white text-sm cursor-pointer"
+              @click="openEditModal(addr)">
+              <Edit class="w-4 h-4" /> Sửa
+            </button>
+            <button
+              class="flex items-center gap-1 px-3 py-1 bg-red-100 hover:bg-red-200 rounded-lg text-red-600 text-sm cursor-pointer"
+              @click="deleteAddress(addr.id)">
+              <Trash class="w-4 h-4" /> Xoá
+            </button>
+            <button v-if="!addr.isDefault"
+              class="flex items-center gap-1 px-3 py-1 bg-red-50 hover:bg-red-100 rounded-lg text-red-600 text-sm cursor-pointer"
+              @click="setDefault(addr.id)">
+              <Star class="w-4 h-4" /> Đặt mặc định
+            </button>
+          </div>
         </div>
       </div>
     </div>

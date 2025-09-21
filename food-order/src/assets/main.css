@@ -73,3 +73,67 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Account layout styles */
+.account-layout {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.account-sidebar {
+  width: 260px; /* fixed sidebar so content doesn't shift */
+  background: #111111; /* preserve dark sidebar */
+  color: #ffffff;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.account-sidebar .link-logout {
+  color: #d1d1d1;
+  text-decoration: underline;
+}
+
+.nav-link {
+  display: block;
+  padding: .45rem .5rem;
+  border-radius: .375rem;
+  color: #e6e6e6;
+  transition: background-color .18s ease, color .18s ease, transform .12s ease;
+}
+.nav-link:hover {
+  background: rgba(255,255,255,0.04);
+  color: #fff;
+  transform: translateX(2px);
+}
+.nav-link.active {
+  background: linear-gradient(90deg, rgba(228,0,43,0.12), rgba(228,0,43,0.06));
+  color: var(--text-title-hover);
+  font-weight: 600;
+}
+
+.content-card {
+  background: #ffffff;
+  border-radius: .5rem;
+  padding: 1.25rem;
+  min-height: 320px; /* prevent small content from collapsing layout */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.content-card.no-radius {
+  border-radius: 0;
+}
+
+/* Simple fade transition for router view so content switches smoothly */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .25s ease, transform .25s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.fade-enter-to, .fade-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
