@@ -2,7 +2,7 @@
     <div class="address-selector">
         <label>Địa chỉ giao hàng</label>
         <div class="selected" @click="open = true">
-            <div v-if="selectedAddress">{{ selectedAddress.address }}</div>
+            <div v-if="currentSelected">{{ currentSelected.address }}</div>
             <div v-else class="placeholder">Chọn địa chỉ giao hàng</div>
         </div>
 
@@ -15,12 +15,16 @@
                 <div v-else>
                     <div v-if="addresses.length === 0">Không có địa chỉ. Thêm mới trong profile.</div>
                     <ul class="addr-list">
-                        <li v-for="a in addresses" :key="a.id" class="addr-item">
+                        <li v-for="a in addresses" :key="a.id"
+                            :class="['addr-item', { 'active': currentSelected && currentSelected.id === a.id }]">
                             <div>
                                 <div class="name">{{ a.isDefault ? a.address + ' (Mặc định)' : a.address }}</div>
-
                             </div>
-                            <button @click="select(a)">Chọn</button>
+                            <div>
+                                <button v-if="currentSelected && currentSelected.id === a.id" disabled
+                                    class="btn-selected">Đã chọn</button>
+                                <button v-else @click="select(a)">Chọn</button>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -54,15 +58,42 @@ onMounted(async () => {
     try {
         await locationStore.fetchLocationsByUser()
         // auto select default if present
-        const def = locationStore.locations.find((l) => l.isDefault)
-        if (def) {
-            currentSelected.value = def
-            emits('update:selectedAddress', def)
+        // if app already has a selectedLocation in the store (e.g., persisted during session), use it
+        if (locationStore.selectedLocation) {
+            currentSelected.value = locationStore.selectedLocation
+            emits('update:selectedAddress', locationStore.selectedLocation)
+        } else {
+            const def = locationStore.locations.find((l) => l.isDefault)
+            if (def) {
+                currentSelected.value = def
+                emits('update:selectedAddress', def)
+            }
         }
     } catch (e) {
         error.value = locationStore.error || 'Không thể tải địa chỉ'
     } finally {
         loading.value = false
+    }
+})
+
+// whenever the modal opens, refresh the address list from API
+watch(open, async (v) => {
+    if (v) {
+        loading.value = true
+        error.value = null
+        try {
+            await locationStore.fetchLocationsByUser()
+            // optionally keep currentSelected if already set, otherwise pick default
+            if (!currentSelected.value && locationStore.locations.length) {
+                const def = locationStore.locations.find((l) => l.isDefault) || locationStore.locations[0]
+                currentSelected.value = def
+                emits('update:selectedAddress', def)
+            }
+        } catch (e) {
+            error.value = locationStore.error || 'Không thể tải địa chỉ'
+        } finally {
+            loading.value = false
+        }
     }
 })
 
@@ -83,6 +114,8 @@ watch(() => props.selectedAddress, (val) => {
 const select = (a) => {
     currentSelected.value = a
     emits('update:selectedAddress', a)
+    // persist selection in location store for session-wide access
+    locationStore.selectedLocation = a
     open.value = false
 }
 </script>
@@ -158,6 +191,18 @@ const select = (a) => {
 .addr-item .addr {
     color: #6b7280;
     font-size: 13px
+}
+
+.addr-item.active {
+    background: #fff7f6;
+    border: 1px solid rgba(239, 68, 68, 0.08);
+}
+
+.btn-selected {
+    background: #eef2f3;
+    color: #0b1220;
+    border-radius: 8px;
+    padding: 8px 10px;
 }
 
 .modal button {

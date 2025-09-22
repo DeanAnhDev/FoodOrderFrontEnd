@@ -22,7 +22,26 @@ export const useLocationStore = defineStore('location', {
       this.error = null
       try {
         const res = await getLocationByUserId()
-        this.locations = res.data
+        // normalize different API shapes:
+        // - res.data could be the array
+        // - res.data.data could be the array
+        // - res.data.items could be the array
+        let payload = res.data
+        if (payload && typeof payload === 'object') {
+          if (Array.isArray(payload)) {
+            // already an array
+          } else if (Array.isArray(payload.data)) {
+            payload = payload.data
+          } else if (Array.isArray(payload.items)) {
+            payload = payload.items
+          } else {
+            // fallback: no array found
+            payload = []
+          }
+        }
+
+        this.locations = payload || []
+        return this.locations
       } catch (err) {
         this.error = err.response?.data?.message || 'Không thể tải danh sách địa chỉ'
       } finally {

@@ -11,7 +11,7 @@ export const useVoucherStore = defineStore('voucher', {
       page: 1,
       pageSize: 10,
       code: null,
-      isActive: null,
+      isActive: true,
       type: null,
       startDateFrom: null,
       startDateTo: null,
@@ -27,7 +27,9 @@ export const useVoucherStore = defineStore('voucher', {
       this.loading = true
       this.error = null
       try {
-        const res = await getAllVouchers({ ...this.query, ...customQuery })
+        // Luôn yêu cầu voucher đang hoạt động trên FE
+        const params = { ...this.query, ...customQuery, isActive: true }
+        const res = await getAllVouchers(params)
         // giả sử backend trả về { items, totalCount }
         this.vouchers = res.data.items || res.data
         this.total = res.data.totalCount || 0

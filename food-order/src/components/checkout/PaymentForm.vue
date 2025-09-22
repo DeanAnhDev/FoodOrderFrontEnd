@@ -26,6 +26,7 @@ const emits = defineEmits(['submit'])
 const selected = ref(null)
 const mode = ref('cod')
 
+
 const card = ref({ number: '', name: '' })
 
 watch(() => props.initialPaymentMethod, (v) => {

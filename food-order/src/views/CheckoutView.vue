@@ -32,8 +32,8 @@
                     </span>
                 </h2>
             </div>
-            <OrderSummary :items="cartItems" :total="finalTotal" :voucher="selectedVoucher"
-                :shippingFee="shippingFee" />
+            <OrderSummary :items="cartItems" :total="finalTotal" :voucher="selectedVoucher" :shippingFee="shippingFee"
+                :shippingFormatted="shippingStore.formattedFee" />
         </div>
     </div>
 </template>
@@ -43,6 +43,7 @@ import { computed, ref, watch } from 'vue'
 import { useCartStore } from '@/stores/cartStore'
 import { useShippingStore } from '@/stores/shippingStore'
 import { useUserStore } from '@/stores/userStore'
+import { useLocationStore } from '@/stores/locationStore'
 import AddressSelector from '@/components/checkout/AddressSelector.vue'
 import VoucherSelector from '@/components/checkout/VoucherSelector.vue'
 import PaymentMethodSelector from '@/components/checkout/PaymentMethodSelector.vue'
@@ -92,6 +93,12 @@ const selectedPaymentMethod = ref(null)
 const shippingStore = useShippingStore()
 const userStore = useUserStore()
 const shippingFee = ref(0)
+const locationStore = useLocationStore()
+
+// keep local selectedAddress in sync if AddressSelector writes into the location store
+watch(() => locationStore.selectedLocation, (loc) => {
+    if (loc) selectedAddress.value = loc
+})
 
 // when address changes, estimate shipping fee
 watch(selectedAddress, async (addr) => {
