@@ -2,7 +2,7 @@
     <div class="address-selector">
         <label>Địa chỉ giao hàng</label>
         <div class="selected" @click="open = true">
-            <div v-if="currentSelected">{{ currentSelected.address }}</div>
+            <div v-if="currentSelected">{{ currentSelected.address || currentSelected.fullAddress }}</div>
             <div v-else class="placeholder">Chọn địa chỉ giao hàng</div>
         </div>
 
@@ -15,13 +15,14 @@
                 <div v-else>
                     <div v-if="addresses.length === 0">Không có địa chỉ. Thêm mới trong profile.</div>
                     <ul class="addr-list">
-                        <li v-for="a in addresses" :key="a.id"
-                            :class="['addr-item', { 'active': currentSelected && currentSelected.id === a.id }]">
+                        <li v-for="a in addresses" :key="a.id || a.locationId"
+                            :class="['addr-item', { 'active': currentSelected && getId(currentSelected) === getId(a) }]">
                             <div>
-                                <div class="name">{{ a.isDefault ? a.address + ' (Mặc định)' : a.address }}</div>
+                                <div class="name">{{ a.isDefault ? (a.address || a.fullAddress) + ' (Mặc định)' :
+                                    (a.address || a.fullAddress) }}</div>
                             </div>
                             <div>
-                                <button v-if="currentSelected && currentSelected.id === a.id" disabled
+                                <button v-if="currentSelected && getId(currentSelected) === getId(a)" disabled
                                     class="btn-selected">Đã chọn</button>
                                 <button v-else @click="select(a)">Chọn</button>
                             </div>
@@ -36,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed, onUnmounted } from 'vue'
 import { useLocationStore } from '@/stores/locationStore'
 
 const props = defineProps({
@@ -48,9 +49,15 @@ const open = ref(false)
 const currentSelected = ref(props.selectedAddress || null)
 
 const locationStore = useLocationStore()
-const addresses = locationStore.locations
+// keep addresses reactive even if the store replaces the array reference
+const addresses = computed(() => locationStore.locations || [])
 const loading = ref(false)
 const error = ref(null)
+
+const getId = (a) => {
+    const id = a?.id ?? a?.locationId ?? a?.locationID ?? a?.Id ?? a?.ID ?? null
+    return id != null ? String(id) : null
+}
 
 onMounted(async () => {
     loading.value = true
@@ -74,6 +81,20 @@ onMounted(async () => {
     } finally {
         loading.value = false
     }
+})
+
+const onKeyDown = (e) => {
+    if (e.key === 'Escape' && open.value) {
+        open.value = false
+    }
+}
+
+onMounted(() => {
+    window.addEventListener('keydown', onKeyDown)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('keydown', onKeyDown)
 })
 
 // whenever the modal opens, refresh the address list from API

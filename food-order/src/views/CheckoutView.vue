@@ -13,11 +13,20 @@
             </section>
 
             <section class="card-section">
+                <label class=" font-semibold">Ghi chú đơn hàng</label>
+                <textarea v-model="orderNote" rows="3" maxlength="200"
+                    class="w-full bg-white p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
+                    placeholder="Ví dụ: Thêm khăn giấy, thêm đũa..."></textarea>
+                <div class="text-xs text-gray-500 mt-1">Tối đa 200 ký tự</div>
+            </section>
+
+            <section class="card-section">
                 <PaymentMethodSelector v-model:selectedPaymentMethod="selectedPaymentMethod" />
             </section>
 
             <div class="place-order">
-                <PaymentForm @submit="handlePayment" :initialPaymentMethod="selectedPaymentMethod" />
+                <PaymentForm @submit="handlePayment" :initialPaymentMethod="selectedPaymentMethod"
+                    :disabled="!canPlaceOrder" />
             </div>
         </div>
 
@@ -44,6 +53,7 @@ import { useCartStore } from '@/stores/cartStore'
 import { useShippingStore } from '@/stores/shippingStore'
 import { useUserStore } from '@/stores/userStore'
 import { useLocationStore } from '@/stores/locationStore'
+import { useToast } from 'vue-toastification'
 import AddressSelector from '@/components/checkout/AddressSelector.vue'
 import VoucherSelector from '@/components/checkout/VoucherSelector.vue'
 import PaymentMethodSelector from '@/components/checkout/PaymentMethodSelector.vue'
@@ -88,7 +98,9 @@ const finalTotal = computed(() =>
 
 const selectedAddress = ref(null)
 const selectedVoucher = ref(null)
+const orderNote = ref('')
 const selectedPaymentMethod = ref(null)
+const canPlaceOrder = computed(() => !!selectedAddress.value && !!selectedPaymentMethod.value)
 
 const shippingStore = useShippingStore()
 const userStore = useUserStore()
@@ -138,13 +150,24 @@ watch(selectedAddress, async (addr) => {
     }
 })
 
+const toast = useToast()
+
 const handlePayment = (paymentDetails) => {
+    if (!selectedAddress.value) {
+        toast.error('Vui lòng chọn địa chỉ giao hàng')
+        return
+    }
+    if (!selectedPaymentMethod.value && !paymentDetails?.method) {
+        toast.error('Vui lòng chọn phương thức thanh toán')
+        return
+    }
     // prepare order payload
     const payload = {
         items: cartItems.value.map(i => ({ cartItemId: i.cartItemId, quantity: i.quantity })),
-        addressId: selectedAddress.value?.id || null,
-        voucherId: selectedVoucher.value?.id || null,
-        paymentMethod: selectedPaymentMethod.value || paymentDetails.method,
+        addressId: selectedAddress.value?.id || selectedAddress.value?.locationId || null,
+        voucherId: selectedVoucher.value?.id || selectedVoucher.value?.voucherId || null,
+        paymentMethod: selectedPaymentMethod.value?.id || paymentDetails.method,
+        note: orderNote.value?.trim() || null,
         paymentDetails
     }
 
@@ -170,6 +193,12 @@ const handlePayment = (paymentDetails) => {
     padding: 18px;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(12, 17, 23, 0.06);
+}
+
+/* ensure the right panel height only fits its content (no grid stretch) */
+.right-panel {
+    align-self: start;
+    height: auto;
 }
 
 .left-panel h2,

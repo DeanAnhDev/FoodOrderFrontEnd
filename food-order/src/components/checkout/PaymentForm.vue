@@ -4,8 +4,10 @@
         <!-- order preview removed: OrderSummary on the right shows full breakdown -->
 
         <div class="actions">
-            <button type="submit"
-                class="cursor-pointer w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-bold py-3 rounded-xl shadow-lg hover:scale-101 hover:shadow-xl transition-all duration-200">
+            <button type="submit" :disabled="disabled"
+                class="w-full font-bold py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl" :class="disabled
+                    ? 'cursor-not-allowed bg-gray-300 text-gray-600'
+                    : 'cursor-pointer bg-gradient-to-r from-red-500 to-red-700 text-white hover:scale-101'">
                 <span class="inline-flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -20,7 +22,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-const props = defineProps({ initialPaymentMethod: { type: Object, default: null } })
+const props = defineProps({ initialPaymentMethod: { type: Object, default: null }, disabled: { type: Boolean, default: false } })
 const emits = defineEmits(['submit'])
 
 const selected = ref(null)
@@ -35,6 +37,7 @@ watch(() => props.initialPaymentMethod, (v) => {
 })
 
 const onSubmit = () => {
+    if (props.disabled) return
     const payload = {
         method: selected.value?.id || mode.value || 'cod',
         card: mode.value === 'card' ? card.value : null
