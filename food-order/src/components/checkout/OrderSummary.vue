@@ -1,74 +1,168 @@
 <template>
-  <div class="order-summary">
-    <h2>Tóm tắt đơn hàng</h2>
-    <div v-if="items.length === 0" class="empty-summary">
-      <p>Không có sản phẩm nào trong đơn hàng.</p>
+    <div class="order-summary">
+        <div class="summary-list">
+            <div v-for="item in items" :key="item.cartItemId" class="summary-item">
+                <div class="left" style="display:flex; gap:10px; align-items:center">
+                    <img :src="getImage(item)" alt="img" class="thumb" />
+                    <div>
+                        <div class="name">{{ getName(item) }}</div>
+                        <div class="meta">x{{ item.quantity }}</div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="price">{{ formatPrice(getDiscountedUnitPrice(item) * item.quantity) }}</div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="price-lines">
+            <div class="line"><span>Tạm tính</span><span>{{ formatPrice(props.total) }}</span></div>
+            <div v-if="voucherDiscount > 0" class="line"><span>Voucher</span><span class="discount">-{{
+                formatPrice(voucherDiscount) }}</span></div>
+            <div class="line"><span>Phí giao hàng</span><span>{{ formatPrice(shippingFee) }}</span></div>
+            <div class="flex justify-between items-center font-semibold text-lg mt-2 text-gray-900">
+                <span>Thành tiền</span>
+                <span class="text-red-500 text-xl font-semibold">{{ formatPrice(grandTotal) }}</span>
+            </div>
+        </div>
     </div>
-    <div v-else>
-      <ul>
-        <li v-for="item in items" :key="item.cartItemId" class="order-item">
-          <span>{{ item.food?.foodName || item.combo?.comboName }}</span>
-          <span>x {{ item.quantity }}</span>
-          <span>{{ formatPrice(getDiscountedUnitPrice(item) * item.quantity) }}</span>
-        </li>
-      </ul>
-      <div class="total">
-        <span>Tổng cộng:</span>
-        <span>{{ formatPrice(total) }}</span>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { useCartStore } from '@/stores/cartStore'
 import { formattedPrice } from '@/utils/formart'
 
-const cartStore = useCartStore()
-const items = computed(() => cartStore.items)
+const props = defineProps({
+    items: { type: Array, default: () => [] },
+    total: { type: Number, default: 0 },
+    voucher: { type: Object, default: null }
+})
+
+// UI helpers
+const shippingFee = computed(() => (props.items.length > 0 ? 15000 : 0))
+
+const voucherDiscount = computed(() => {
+    const v = props.voucher
+    if (!v) return 0
+    // support two possible voucher shapes: { type: 'Percent'|'Amount', discountAmount }
+    if (v.type === 'Percentage') return Math.round((props.total * (v.discountAmount || 0)) / 100)
+    if (v.type === 'Amount') return Math.min(v.discountAmount || 0, props.total)
+    return 0
+})
+
+const grandTotal = computed(() => Math.max(0, props.total - voucherDiscount.value + shippingFee.value))
+
+const getImage = (item) => item.food?.images?.thumbnailUrl || item.combo?.images?.thumbnailUrl || '/placeholder.jpg'
 
 const formatPrice = formattedPrice
 
-const getDiscountedUnitPrice = (item) => {
-  const base = item.food?.price || item.combo?.price || 0
-  const promo = item.food?.promotion || item.combo?.promotion
-  if (!promo || !promo.isActive) return base
+const getName = (item) => item.food?.foodName || item.combo?.comboName || 'Không rõ'
+const getPrice = (item) => item.food?.price || item.combo?.price || 0
 
-  if (promo.type === 'Amount') {
-    return Math.max(0, base - (promo.discountAmount || 0))
-  }
-
-  if (promo.type === 'Percent') {
-    return Math.max(0, base - (base * (promo.discountAmount || 0)) / 100)
-  }
-
-  return base
+const getPromotionAmountPerUnit = (item) => {
+    const promo = item.food?.promotion || item.combo?.promotion
+    if (!promo || !promo.isActive) return 0
+    const base = getPrice(item)
+    if (promo.type === 'Amount') return Math.min(promo.discountAmount || 0, base)
+    if (promo.type === 'Percentage') return (base * (promo.discountAmount || 0)) / 100
+    return 0
 }
 
-const total = computed(() =>
-  items.value.reduce((sum, item) => {
-    return sum + getDiscountedUnitPrice(item) * item.quantity
-  }, 0)
-)
+const getDiscountedUnitPrice = (item) => {
+    const base = getPrice(item)
+    const promo = getPromotionAmountPerUnit(item)
+    return Math.max(0, base - promo)
+}
 </script>
 
 <style scoped>
 .order-summary {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 12px
 }
 
-.order-item {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0
 }
 
-.total {
-  font-weight: bold;
-  margin-top: 20px;
+.name {
+    font-weight: 700;
+    color: #0b1220
+}
+
+.meta {
+    color: #6b7280;
+    font-size: 13px
+}
+
+.price {
+    font-weight: 700
+}
+
+.summary-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: 800;
+    margin-top: 8px
+}
+
+.total-price {
+    color: var(--primary, #ef4444)
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background: #eef2f7;
+    margin: 8px 0
+}
+
+.thumb {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 8px
+}
+
+.price-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px
+}
+
+.price-lines .line {
+    display: flex;
+    justify-content: space-between;
+    color: #6b7280
+}
+
+.price-lines .line.total {
+    font-weight: 800;
+    color: #0b1220
+}
+
+.price-lines .discount {
+    color: #16a34a;
+    font-weight: 800
+}
+
+.price-lines .grand {
+    color: var(--primary, #ef4444);
+    font-weight: 900
+}
+
+@media (max-width:480px) {
+    .thumb {
+        width: 40px;
+        height: 40px
+    }
 }
 </style>

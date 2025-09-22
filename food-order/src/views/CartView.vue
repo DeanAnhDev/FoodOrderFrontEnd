@@ -1,6 +1,7 @@
 <script setup>
 import { useCartStore } from '@/stores/cartStore'
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import cartService from '@/services/cartService'
 import { formattedPrice } from '@/utils/formart'
 const cartStore = useCartStore()
@@ -11,6 +12,12 @@ onMounted(() => {
 })
 
 const items = computed(() => cartStore.items)
+
+const router = useRouter()
+
+const goToCheckout = () => {
+  router.push('/checkout')
+}
 
 const getImage = (item) =>
   item.food?.images?.thumbnailUrl || item.combo?.images?.thumbnailUrl || '/placeholder.jpg'
@@ -212,7 +219,7 @@ const toggleDetails = (cartItemId) => {
           </div>
         </div>
 
-        <button class="checkout-btn">
+        <button class="checkout-btn" @click="goToCheckout">
           <span>Thanh toán</span>
           <span>{{ formatPrice(finalTotal) }}</span>
         </button>
@@ -660,7 +667,7 @@ const toggleDetails = (cartItemId) => {
 
 .underline-text {
   text-decoration: underline;
- color: #0b0b0b;
+  color: #0b0b0b;
 }
 
 .cursor-pointer {

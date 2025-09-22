@@ -1,85 +1,73 @@
 <template>
-  <div class="payment-form">
-    <h2>Payment Information</h2>
-    <form @submit.prevent="submitPayment">
-      <div class="form-group">
-        <label for="cardNumber">Card Number</label>
-        <input type="text" id="cardNumber" v-model="cardNumber" required />
-      </div>
-      <div class="form-group">
-        <label for="cardHolder">Card Holder Name</label>
-        <input type="text" id="cardHolder" v-model="cardHolder" required />
-      </div>
-      <div class="form-group">
-        <label for="expiryDate">Expiry Date</label>
-        <input type="text" id="expiryDate" v-model="expiryDate" placeholder="MM/YY" required />
-      </div>
-      <div class="form-group">
-        <label for="cvv">CVV</label>
-        <input type="text" id="cvv" v-model="cvv" required />
-      </div>
-      <button type="submit" class="btn-primary">Pay Now</button>
+    <form class="payment-form" @submit.prevent="onSubmit">
+
+        <!-- order preview removed: OrderSummary on the right shows full breakdown -->
+
+        <div class="actions">
+            <button type="submit"
+                class="cursor-pointer w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-bold py-3 rounded-xl shadow-lg hover:scale-101 hover:shadow-xl transition-all duration-200">
+                <span class="inline-flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M17 9V7a5 5 0 00-10 0v2M5 9h14v10a2 2 0 01-2 2H7a2 2 0 01-2-2V9z" />
+                    </svg>
+                    Xác nhận và thanh toán
+                </span>
+            </button>
+        </div>
     </form>
-  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+const props = defineProps({ initialPaymentMethod: { type: Object, default: null } })
+const emits = defineEmits(['submit'])
 
-const cardNumber = ref('')
-const cardHolder = ref('')
-const expiryDate = ref('')
-const cvv = ref('')
+const selected = ref(null)
+const mode = ref('cod')
 
-const submitPayment = () => {
-  // Logic to handle payment submission
-  console.log({
-    cardNumber: cardNumber.value,
-    cardHolder: cardHolder.value,
-    expiryDate: expiryDate.value,
-    cvv: cvv.value,
-  })
-  // Here you would typically call an API to process the payment
+const card = ref({ number: '', name: '' })
+
+watch(() => props.initialPaymentMethod, (v) => {
+    selected.value = v
+    mode.value = v?.id || 'cod'
+})
+
+const onSubmit = () => {
+    const payload = {
+        method: selected.value?.id || mode.value || 'cod',
+        card: mode.value === 'card' ? card.value : null
+    }
+    emits('submit', payload)
 }
 </script>
 
 <style scoped>
 .payment-form {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px
 }
 
-.form-group {
-  margin-bottom: 15px;
+.method-preview {
+    background: #fbfbfd;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #eef2f7
 }
 
-label {
-  display: block;
-  margin-bottom: 5px;
+.card-fields label {
+    font-weight: 600;
+    font-size: 13px
 }
 
-input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.card-fields input {
+    padding: 10px;
+    border: 1px solid #eef2f7;
+    border-radius: 8px
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.btn-primary:hover {
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+.actions {
+    margin-top: 8px
 }
 </style>
