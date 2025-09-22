@@ -50,16 +50,59 @@ const shippingDisplay = computed(() => {
     return formatPrice(computedShippingFee.value)
 })
 
+// Subtotal based on discounted unit prices (after item promotions), ensures consistency across components
+const discountedSubtotal = computed(() =>
+    (props.items || []).reduce((sum, item) => sum + getDiscountedUnitPrice(item) * item.quantity, 0)
+)
+
+// Helpers for voucher logic
+const normalizeType = (v) => {
+    const t = v?.type
+    if (t === 'Amount' || t === 'Percentage' || t === 'Percent') return t === 'Percent' ? 'Percentage' : t
+    if (typeof t === 'number') return t === 1 ? 'Percentage' : 'Amount' // assume 0=Amount, 1=Percentage
+    return 'Amount'
+}
+const maxDiscountCap = (v) => {
+    const cap = Number(v?.maxDiscountPrice || v?.maxDiscount || 0)
+    return cap > 0 ? cap : Infinity
+}
+const minOrderAmount = (v) => Number(v?.minOrderAmount || v?.minOrderPrice || v?.minimumOrder || 0)
+const now = () => new Date()
+const isWithinDate = (v) => {
+    const s = v?.startDate ? new Date(v.startDate) : null
+    const e = v?.endDate ? new Date(v.endDate) : null
+    const t = now()
+    if (s && t < s) return false
+    if (e && t > e) return false
+    return true
+}
+const isActive = (v) => (v?.isActive === undefined ? true : !!v.isActive) && !v?.isOutOfStock
+
 const voucherDiscount = computed(() => {
     const v = props.voucher
     if (!v) return 0
-    // support two possible voucher shapes: { type: 'Percent'|'Amount', discountAmount }
-    if (v.type === 'Percentage' || v.type === 'Percent') return Math.round((props.total * (v.discountAmount || 0)) / 100)
-    if (v.type === 'Amount') return Math.min(v.discountAmount || 0, props.total)
-    return 0
+
+    // Eligibility checks
+    if (!isActive(v)) return 0
+    if (!isWithinDate(v)) return 0
+    if (discountedSubtotal.value < minOrderAmount(v)) return 0
+
+    // Calculate raw discount based on discounted subtotal
+    const t = normalizeType(v)
+    const amount = Number(v.discountAmount || 0)
+    const base = discountedSubtotal.value
+    let raw = 0
+    if (t === 'Amount') {
+        raw = Math.min(amount, base)
+    } else { // Percentage
+        raw = Math.round((base * amount) / 100)
+    }
+    const capped = Math.min(raw, maxDiscountCap(v), base)
+    return Math.max(0, capped)
 })
 
-const grandTotal = computed(() => Math.max(0, props.total - voucherDiscount.value + computedShippingFee.value))
+// Use discountedSubtotal to align with per-item price rendering, then apply voucher and add shipping
+const grandTotal = computed(() => Math.max(0, discountedSubtotal.value - voucherDiscount.value + computedShippingFee.value))
 
 const getImage = (item) => item.food?.images?.thumbnailUrl || item.combo?.images?.thumbnailUrl || '/placeholder.jpg'
 

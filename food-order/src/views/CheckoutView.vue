@@ -20,13 +20,14 @@
                 <div class="text-xs text-gray-500 mt-1">Tối đa 200 ký tự</div>
             </section>
 
+
             <section class="card-section">
                 <PaymentMethodSelector v-model:selectedPaymentMethod="selectedPaymentMethod" />
             </section>
 
             <div class="place-order">
                 <PaymentForm @submit="handlePayment" :initialPaymentMethod="selectedPaymentMethod"
-                    :disabled="!canPlaceOrder" />
+                    :disabled="!canPlaceOrder || orderStore.loading" />
             </div>
         </div>
 
@@ -59,8 +60,12 @@ import VoucherSelector from '@/components/checkout/VoucherSelector.vue'
 import PaymentMethodSelector from '@/components/checkout/PaymentMethodSelector.vue'
 import PaymentForm from '@/components/checkout/PaymentForm.vue'
 import OrderSummary from '@/components/checkout/OrderSummary.vue'
+import { useOrderStore } from '@/stores/orderStore'
+import { useRouter } from 'vue-router'
 
 const cartStore = useCartStore()
+const orderStore = useOrderStore()
+const router = useRouter()
 
 const cartItems = computed(() => cartStore.items)
 
@@ -152,7 +157,18 @@ watch(selectedAddress, async (addr) => {
 
 const toast = useToast()
 
-const handlePayment = (paymentDetails) => {
+const mapPaymentMethod = (idOrName) => {
+    if (idOrName === 0 || idOrName === 1) return idOrName
+    if (!idOrName) return null
+    const v = String(idOrName).toLowerCase()
+    // Backend expects numeric enum: 0 = CashOnDelivery, 1 = BankTransfer
+    if (v === '0' || v === 'cod' || v === 'cashondelivery') return 0
+    if (v === '1' || v === 'vnpay' || v === 'banktransfer' || v === 'vn-pay') return 1
+    // Default to COD (0) if unknown to avoid binding errors
+    return 0
+}
+
+const handlePayment = async (paymentDetails) => {
     if (!selectedAddress.value) {
         toast.error('Vui lòng chọn địa chỉ giao hàng')
         return
@@ -161,18 +177,36 @@ const handlePayment = (paymentDetails) => {
         toast.error('Vui lòng chọn phương thức thanh toán')
         return
     }
-    // prepare order payload
-    const payload = {
-        items: cartItems.value.map(i => ({ cartItemId: i.cartItemId, quantity: i.quantity })),
-        addressId: selectedAddress.value?.id || selectedAddress.value?.locationId || null,
-        voucherId: selectedVoucher.value?.id || selectedVoucher.value?.voucherId || null,
-        paymentMethod: selectedPaymentMethod.value?.id || paymentDetails.method,
-        note: orderNote.value?.trim() || null,
-        paymentDetails
+    // ensure CartId available
+    if (!cartStore.cartId) {
+        try { await cartStore.fetchCart() } catch { }
     }
 
-    console.log('Order payload:', payload)
-    // TODO: call orderService.createOrder(payload) and handle response
+    // Build CreateOrderDto per backend contract
+    const dto = {
+        CartId: cartStore.cartId,
+        PaymentMethod: mapPaymentMethod(selectedPaymentMethod.value?.id || paymentDetails.method),
+        Note: orderNote.value?.trim() || null,
+        LocationId: selectedAddress.value?.id || selectedAddress.value?.locationId || null,
+        VoucherId: selectedVoucher.value?.id || selectedVoucher.value?.voucherId || null,
+        Reason: '',
+    }
+
+    try {
+        const res = await orderStore.submitOrder(dto)
+        if (res?.success) {
+            if (res.paymentUrl) {
+                window.location.href = res.paymentUrl
+            } else {
+                router.push({ name: 'CheckoutSuccess' })
+            }
+        } else {
+            router.push({ name: 'CheckoutFailed' })
+        }
+    } catch (err) {
+        toast.error(orderStore.error || 'Tạo đơn hàng thất bại')
+        router.push({ name: 'CheckoutFailed' })
+    }
 }
 </script>
 

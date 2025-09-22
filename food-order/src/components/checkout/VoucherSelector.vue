@@ -5,6 +5,9 @@
             <div v-if="currentSelected">
                 <strong>{{ currentSelected.code }}</strong>
                 — {{ currentSelected.description || currentSelected.name || '' }}
+                <template v-if="hasCap(currentSelected)">
+                    — Tối đa: <strong>{{ formatPrice(maxDiscountCap(currentSelected)) }}</strong>
+                </template>
             </div>
             <div v-else class="placeholder">Chọn voucher (nếu có)</div>
         </div>
@@ -30,7 +33,7 @@
                                     <div class="line-1">
                                         <span class="code">{{ v.code }}</span>
                                         <span class="badge" :class="displayType(v).toLowerCase()">{{ displayType(v)
-                                        }}</span>
+                                            }}</span>
                                     </div>
                                     <div class="desc">{{ v.description || v.name }}</div>
                                     <div class="meta">
@@ -38,11 +41,14 @@
                                         <span v-if="minOrderAmount(v) > 0" class="sep">•</span>
                                         <span v-if="minOrderAmount(v) > 0">Đơn tối thiểu: <strong>{{
                                             formatPrice(minOrderAmount(v)) }}</strong></span>
+                                        <span v-if="hasCap(v)" class="sep">•</span>
+                                        <span v-if="hasCap(v)">Tối đa: <strong>{{ formatPrice(maxDiscountCap(v))
+                                                }}</strong></span>
                                     </div>
                                     <div class="hint">
                                         <template v-if="v.eligible">
                                             Tiết kiệm: <strong class="save">{{ formatPrice(discountAmount(v))
-                                            }}</strong>
+                                                }}</strong>
                                             <span class="sep">•</span>
                                             Sau giảm: <strong>{{ formatPrice(finalPriceAfter(v)) }}</strong>
                                         </template>
@@ -160,6 +166,9 @@ const maxDiscountCap = (v) => {
     const cap = Number(v.maxDiscountPrice || v.maxDiscount || 0)
     return cap > 0 ? cap : Infinity
 }
+
+// Có giới hạn giảm tối đa không?
+const hasCap = (v) => Number.isFinite(maxDiscountCap(v))
 
 const discountAmount = (v) => {
     if (!v) return 0
