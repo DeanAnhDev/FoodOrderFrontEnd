@@ -7,3 +7,7 @@ export const createOrder = async (data) => {
 export const getOrders = async (query) => {
   return axiosClient.get('/order', { params: query })
 }
+
+export const updateOrderStatus = async (data) => {
+  return axiosClient.put('/order/status', data)
+}

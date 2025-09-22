@@ -75,7 +75,7 @@
 
                 <!-- Action buttons based on status -->
                 <div class="order-actions">
-                    <button v-if="order.status === 0" @click="cancelOrder(order.orderId)" class="cancel-button">
+                    <button v-if="order.status === 0" @click="cancelOrder(order)" class="cancel-button">
                         Hủy đơn hàng
                     </button>
                 </div>
@@ -103,6 +103,47 @@
             <h3>Không có đơn hàng nào</h3>
             <p>{{ getEmptyMessage() }}</p>
         </div>
+
+        <!-- Cancel Order Modal -->
+        <div v-if="showCancelModal" class="modal-overlay" @click="closeCancelModal">
+            <div class="modal-content" @click.stop>
+                <div class="modal-header">
+                    <h3>Xác nhận hủy đơn hàng</h3>
+                    <button class="close-button" @click="closeCancelModal">×</button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="confirmation-text">
+                        Bạn có chắc chắn muốn hủy đơn hàng <strong>#{{ orderToCancel?.orderCode }}</strong> không?
+                    </p>
+
+                    <div class="reason-section">
+                        <label class="reason-label">Lý do hủy đơn hàng:</label>
+                        <div class="reason-options">
+                            <label v-for="reason in cancelReasons" :key="reason.value" class="reason-option">
+                                <input type="radio" :value="reason.value" v-model="selectedCancelReason"
+                                    @change="onReasonChange" />
+                                <span>{{ reason.label }}</span>
+                            </label>
+                        </div>
+
+                        <div v-if="selectedCancelReason === 'other'" class="custom-reason">
+                            <textarea v-model="customCancelReason" placeholder="Nhập lý do khác..." rows="3"
+                                class="custom-reason-input"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn-secondary" @click="closeCancelModal">Không</button>
+                    <button class="btn-danger" @click="confirmCancelOrder"
+                        :disabled="!canConfirmCancel || orderStore.loading">
+                        <span v-if="orderStore.loading">Đang hủy...</span>
+                        <span v-else>Xác nhận hủy</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -110,9 +151,27 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useOrderStore } from '@/stores/orderStore'
 import { formattedPrice } from '@/utils/formart'
+import { useToast } from 'vue-toastification'
 
 const orderStore = useOrderStore()
 const selectedStatus = ref(null)
+const toast = useToast()
+
+// Cancel order modal state
+const showCancelModal = ref(false)
+const orderToCancel = ref(null)
+const selectedCancelReason = ref('')
+const customCancelReason = ref('')
+
+// Cancel reasons
+const cancelReasons = [
+    { value: 'changed_mind', label: 'Đổi ý không muốn mua nữa' },
+    { value: 'wrong_order', label: 'Đặt nhầm sản phẩm' },
+    { value: 'found_better_price', label: 'Tìm được giá rẻ hơn ở nơi khác' },
+    { value: 'financial_issue', label: 'Vấn đề tài chính' },
+    { value: 'delivery_time', label: 'Thời gian giao hàng quá lâu' },
+    { value: 'other', label: 'Khác (nhập lý do)' }
+]
 
 // Danh sách các trạng thái order (sử dụng số theo enum backend)
 const orderStatuses = [
@@ -128,6 +187,14 @@ const orderStatuses = [
 
 const totalPages = computed(() => {
     return Math.ceil(orderStore.total / orderStore.query.pageSize)
+})
+
+const canConfirmCancel = computed(() => {
+    if (!selectedCancelReason.value) return false
+    if (selectedCancelReason.value === 'other') {
+        return customCancelReason.value.trim().length > 0
+    }
+    return true
 })
 
 // Methods
@@ -222,9 +289,54 @@ const getEmptyMessage = () => {
     return 'Bạn chưa có đơn hàng nào. Hãy đặt hàng ngay!'
 }
 
-const cancelOrder = (orderId) => {
-    // TODO: Implement cancel order logic
-    console.log('Cancel order:', orderId)
+const cancelOrder = (order) => {
+    orderToCancel.value = order
+    showCancelModal.value = true
+    selectedCancelReason.value = ''
+    customCancelReason.value = ''
+}
+
+const closeCancelModal = () => {
+    showCancelModal.value = false
+    orderToCancel.value = null
+    selectedCancelReason.value = ''
+    customCancelReason.value = ''
+}
+
+const onReasonChange = () => {
+    if (selectedCancelReason.value !== 'other') {
+        customCancelReason.value = ''
+    }
+}
+
+const confirmCancelOrder = async () => {
+    if (!canConfirmCancel.value || !orderToCancel.value) return
+
+    const reason = selectedCancelReason.value === 'other'
+        ? customCancelReason.value.trim()
+        : cancelReasons.find(r => r.value === selectedCancelReason.value)?.label || ''
+
+    try {
+        const request = {
+            OrderId: orderToCancel.value.orderId,
+            NewStatus: 6, // Cancelled status (OrderStatus enum)
+            Reason: reason
+        }
+
+        const result = await orderStore.changeOrderStatus(request)
+
+        if (result.success) {
+            toast.success(result.message || 'Hủy đơn hàng thành công!')
+            closeCancelModal()
+            // Reload orders to get updated data
+            loadOrders()
+        } else {
+            toast.error(result.message || 'Không thể hủy đơn hàng')
+        }
+    } catch (error) {
+        console.error('Cancel order error:', error)
+        toast.error('Có lỗi xảy ra khi hủy đơn hàng')
+    }
 }
 
 // Load orders when component mounts
@@ -927,6 +1039,243 @@ onMounted(() => {
 
     .tab-label {
         font-size: 14px;
+    }
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideUp 0.3s ease-out;
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 0 24px;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 20px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #dc3545;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-button:hover {
+    background: #f8f9fa;
+    color: #dc3545;
+}
+
+.modal-body {
+    padding: 0 24px 20px;
+}
+
+.confirmation-text {
+    font-size: 16px;
+    color: #495057;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.reason-section {
+    margin-bottom: 20px;
+}
+
+.reason-label {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.reason-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.reason-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reason-option:hover {
+    border-color: #007bff;
+    background: #f8f9ff;
+}
+
+.reason-option input[type="radio"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+.reason-option span {
+    font-size: 14px;
+    color: #495057;
+    cursor: pointer;
+}
+
+.reason-option:has(input:checked) {
+    border-color: #007bff;
+    background: #e7f3ff;
+}
+
+.custom-reason {
+    margin-top: 12px;
+}
+
+.custom-reason-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.3s ease;
+}
+
+.custom-reason-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding: 20px 24px 24px;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn-secondary {
+    padding: 12px 24px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.btn-danger:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+.btn-danger:disabled {
+    background: #dee2e6;
+    color: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Modal responsive */
+@media (max-width: 480px) {
+    .modal-overlay {
+        padding: 10px;
+    }
+
+    .modal-content {
+        max-height: 95vh;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+    }
+
+    .btn-secondary,
+    .btn-danger {
+        width: 100%;
+        justify-content: center;
     }
 }
 </style>

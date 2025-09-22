@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { createOrder, getOrders } from '@/services/orderService'
+import { createOrder, getOrders, updateOrderStatus } from '@/services/orderService'
 import { useUserStore } from '@/stores/userStore'
 
 export const useOrderStore = defineStore('order', {
@@ -94,6 +94,36 @@ export const useOrderStore = defineStore('order', {
         this.loading = false
       }
     },
+
+    async changeOrderStatus(request) {
+      this.loading = true
+      this.error = null
+      this.successMessage = null
+      try {
+        const res = await updateOrderStatus(request)
+
+        if (res.data.success) {
+          this.successMessage = res.data.message
+          this.currentOrder = res.data.order
+
+          // cập nhật lại trong list nếu có
+          const idx = this.orders.findIndex((o) => o.id === res.data.order?.id)
+          if (idx !== -1) {
+            this.orders[idx] = res.data.order
+          }
+        } else {
+          this.error = res.data.message || 'Cập nhật trạng thái thất bại'
+        }
+
+        return res.data
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Có lỗi khi cập nhật trạng thái'
+        throw err
+      } finally {
+        this.loading = false
+      }
+    },
+
     async submitOrder(orderData) {
       this.loading = true
       this.error = null
