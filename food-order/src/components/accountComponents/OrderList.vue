@@ -30,10 +30,17 @@
             <div v-for="order in orderStore.orders" :key="order.orderId" class="order-card">
                 <div class="order-header">
                     <div class="order-info">
-                        <h3 class="order-code">Đơn hàng #{{ order.orderCode }}</h3>
-                        <span :class="['status-badge', getStatusClass(order.status)]">
-                            {{ getStatusLabel(order.status) }}
-                        </span>
+                        <div class="order-title-row">
+                            <h3 class="order-code">Đơn hàng #{{ order.orderCode }}</h3>
+                            <div class="status-badges">
+                                <span :class="['status-badge', getStatusClass(order.status)]">
+                                    {{ getStatusLabel(order.status) }}
+                                </span>
+                                <span :class="['payment-status-badge', getPaymentStatusClass(order.paymentStatus)]">
+                                    {{ getPaymentStatusLabel(order.paymentStatus) }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <div class="order-date">
                         {{ formatDate(order.createdAt) }}
@@ -57,6 +64,8 @@
                         <div class="shipping-info">
                             <p><strong>Địa chỉ giao hàng:</strong> {{ order.address }}</p>
                             <p><strong>Phí ship:</strong> {{ formattedPrice(order.shipFee) }}</p>
+                            <p><strong>Hình thức thanh toán:</strong> {{ getPaymentMethodLabel(order.paymentMethod) }}
+                            </p>
                         </div>
                         <div class="total-amount">
                             <strong>Tổng tiền: {{ formattedPrice(order.totalAmount) }}</strong>
@@ -172,6 +181,38 @@ const getStatusClass = (status) => {
         6: 'cancelled'   // Cancelled
     }
     return classMap[status] || 'default'
+}
+
+const getPaymentStatusLabel = (paymentStatus) => {
+    const statusMap = {
+        0: 'Chưa thanh toán',     // Pending
+        1: 'Đã thanh toán',       // Paid  
+        2: 'Thanh toán thất bại', // Failed
+        3: 'Hoàn tiền',          // Refunded
+        4: 'Đã hủy'              // Cancelled
+    }
+    return statusMap[paymentStatus] || 'Không xác định'
+}
+
+const getPaymentStatusClass = (paymentStatus) => {
+    const classMap = {
+        0: 'payment-pending',   // Pending
+        1: 'payment-paid',      // Paid
+        2: 'payment-failed',    // Failed
+        3: 'payment-refunded',  // Refunded
+        4: 'payment-cancelled'  // Cancelled
+    }
+    return classMap[paymentStatus] || 'payment-default'
+}
+
+const getPaymentMethodLabel = (paymentMethod) => {
+    const methodMap = {
+        0: 'Tiền mặt (COD)',     // Cash On Delivery
+        1: 'VNPay',              // Bank Transfer/VNPay
+        2: 'Thẻ tín dụng',       // Credit Card
+        3: 'Ví điện tử'          // E-Wallet
+    }
+    return methodMap[paymentMethod] || 'Không xác định'
 }
 
 const getEmptyMessage = () => {
@@ -390,8 +431,23 @@ onMounted(() => {
 
 .order-info {
     display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+
+.order-title-row {
+    display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 16px;
+    flex-wrap: wrap;
+}
+
+.status-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .order-code {
@@ -477,6 +533,65 @@ onMounted(() => {
     background: linear-gradient(135deg, #f8d7da, #e84393);
     color: #721c24;
     box-shadow: 0 2px 8px rgba(232, 67, 147, 0.3);
+}
+
+/* Payment Status Badges */
+.payment-status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.payment-status-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+.payment-status-badge.payment-pending {
+    background: linear-gradient(135deg, #fef3c7, #f59e0b);
+    color: #92400e;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.payment-status-badge.payment-paid {
+    background: linear-gradient(135deg, #d1fae5, #10b981);
+    color: #065f46;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.payment-status-badge.payment-failed {
+    background: linear-gradient(135deg, #fee2e2, #ef4444);
+    color: #991b1b;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.payment-status-badge.payment-refunded {
+    background: linear-gradient(135deg, #e0e7ff, #8b5cf6);
+    color: #5b21b6;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.payment-status-badge.payment-cancelled {
+    background: linear-gradient(135deg, #f3f4f6, #6b7280);
+    color: #374151;
+    box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
+}
+
+.payment-status-badge.payment-default {
+    background: linear-gradient(135deg, #f9fafb, #d1d5db);
+    color: #4b5563;
+    box-shadow: 0 2px 8px rgba(209, 213, 219, 0.3);
 }
 
 .order-date {
@@ -725,6 +840,20 @@ onMounted(() => {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
+    }
+
+    .order-info {
+        width: 100%;
+    }
+
+    .order-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .status-badges {
+        justify-content: flex-start;
     }
 
     .order-code {
