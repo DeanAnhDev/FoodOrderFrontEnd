@@ -40,10 +40,10 @@
           <ShoppingBasket class="w-9 h-9 text-gray-700 hover:text-title-hover transition-colors duration-200" />
 
           <!-- Badge số lượng -->
-          <span v-if="cartStore.totalQuantity > 0" class="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-red-600 
+          <span v-if="totalQuantity > 0" class="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-red-600 
            text-white text-[11px] font-bold rounded-full min-w-[20px] h-5 
-           px-1 flex items-center justify-center shadow-md ring-2 ring-white">
-            {{ cartStore.totalQuantity }}
+           px-1 flex items-center justify-center shadow-md ring-2 ring-white animate-pulse">
+            {{ totalQuantity }}
           </span>
         </router-link>
 
@@ -57,18 +57,76 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { ShoppingBasket, CircleUserRound } from 'lucide-vue-next'
 import MobileMenu from '../components/headerComponents/MobileMenu.vue'
 import { useCartStore } from '@/stores/cartStore'
-import { onMounted } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+import { useRoute } from 'vue-router'
+import { onMounted, watchEffect } from 'vue'
+
 const cartStore = useCartStore()
+const authStore = useAuthStore()
+const route = useRoute()
+
+// Reactive total quantity để đảm bảo UI update
+const totalQuantity = computed(() => cartStore.totalQuantity)
 
 // Gọi fetchCart khi load layout/header
 onMounted(() => {
-  cartStore.fetchCart()
+  // Chỉ fetch cart nếu có token
+  if (localStorage.getItem('accessToken')) {
+    cartStore.fetchCart()
+  }
 })
 
+// Watch cho route changes để refresh cart sau checkout success
+watchEffect(() => {
+  // Refresh cart sau khi checkout thành công
+  if (route.name === 'CheckoutSuccess') {
+    setTimeout(() => {
+      cartStore.fetchCart()
+    }, 1000)
+  }
+})
+
+// Watch auth state để refresh cart sau login
+watch(() => authStore.accessToken, (newToken, oldToken) => {
+  if (newToken && newToken !== oldToken) {
+    // Đăng nhập thành công, fetch cart
+    setTimeout(() => {
+      cartStore.fetchCart()
+    }, 500)
+  } else if (!newToken && oldToken) {
+    // Đăng xuất, clear cart
+    cartStore.clearCart()
+  }
+}, { immediate: false })
+
+// Watch localStorage cho accessToken changes
+let tokenWatcher = null
+onMounted(() => {
+  tokenWatcher = setInterval(() => {
+    const currentToken = localStorage.getItem('accessToken')
+    if (currentToken && !authStore.accessToken) {
+      // Token có trong localStorage nhưng store chưa có -> vừa login
+      authStore.accessToken = currentToken
+      cartStore.fetchCart()
+    } else if (!currentToken && authStore.accessToken) {
+      // Token không còn trong localStorage nhưng store vẫn có -> vừa logout
+      authStore.accessToken = null
+      cartStore.clearCart()
+    }
+  }, 1000)
+})
+
+// Cleanup interval
+import { onUnmounted } from 'vue'
+onUnmounted(() => {
+  if (tokenWatcher) {
+    clearInterval(tokenWatcher)
+  }
+})
 
 const isMenuOpen = ref(false)
 

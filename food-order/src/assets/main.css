@@ -8,6 +8,11 @@
   --font-title-menu-mobile: 'Oswald', sans-serif;
 }
 
+/* Global smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-family);
   color: var(--text-primary);

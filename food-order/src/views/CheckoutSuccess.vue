@@ -19,8 +19,21 @@
 </template>
 
 <script>
+import { useCartStore } from '@/stores/cartStore'
+
 export default {
     name: 'CheckoutSuccess',
+    setup() {
+        const cartStore = useCartStore()
+
+        // Clear cart và fetch lại để đảm bảo sync với server
+        setTimeout(() => {
+            cartStore.clearCart()
+            cartStore.fetchCart()
+        }, 1000)
+
+        return { cartStore }
+    },
     methods: {
         goHome() {
             this.$router.push('/menu');

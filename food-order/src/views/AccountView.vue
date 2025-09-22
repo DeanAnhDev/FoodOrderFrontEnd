@@ -42,14 +42,22 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/userStore'
+import { useRouter, useRoute } from 'vue-router'
 
 const userStore = useUserStore()
+const router = useRouter()
+const route = useRoute()
 
 const userName = computed(() => userStore.user?.fullName || 'Người dùng')
 
 onMounted(() => {
   if (!userStore.user) {
     userStore.fetchUser()
+  }
+
+  // Redirect to orders if on base account path
+  if (route.path === '/account' || route.path === '/account/') {
+    router.push('/account/orders')
   }
 })
 </script>

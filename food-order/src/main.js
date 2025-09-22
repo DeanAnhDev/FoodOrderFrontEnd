@@ -13,6 +13,28 @@ const app = createApp(App)
 const pinia = createPinia()
 app.use(pinia)
 app.use(router)
+
+// Global scroll behavior
+router.afterEach((to, from) => {
+  // Scroll to top after route change with a small delay to ensure DOM is updated
+  setTimeout(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, 100)
+})
+
+// Setup global cart refresh events
+app.config.globalProperties.$refreshCart = () => {
+  // This will be available in all components
+  const cartStore = useCartStore(pinia)
+  cartStore.fetchCart()
+}
+
+// Listen for custom cart refresh events
+window.addEventListener('refreshCart', () => {
+  const cartStore = useCartStore(pinia)
+  cartStore.fetchCart()
+})
+
 app.use(Toast, {
   timeout: 3000,
   closeOnClick: true,

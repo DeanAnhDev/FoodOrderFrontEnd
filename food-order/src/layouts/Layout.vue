@@ -8,10 +8,13 @@
     </main>
     <!-- Footer -->
     <Footer />
+    <!-- Scroll to Top Button -->
+    <ScrollToTop />
   </div>
 </template>
 
 <script setup>
 import Header from '@/layouts/Header.vue'
 import Footer from '@/layouts/Footer.vue'
+import ScrollToTop from '@/components/ScrollToTop.vue'
 </script>

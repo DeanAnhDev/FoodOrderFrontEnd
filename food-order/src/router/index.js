@@ -15,12 +15,21 @@ import AccountView from '@/views/AccountView.vue'
 import AccountInfo from '@/components/accountComponents/AccountInfo.vue'
 import ChangePassword from '@/components/accountComponents/ChangePassword.vue'
 import Location from '@/components/accountComponents/Location.vue'
+import OrderList from '@/components/accountComponents/OrderList.vue'
 import CheckoutView from '@/views/CheckoutView.vue'
 
 import { useAuthStore } from '@/stores/authStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to, from, savedPosition) {
+    // Nếu có saved position (như khi dùng back button), sử dụng nó
+    if (savedPosition) {
+      return savedPosition
+    }
+    // Luôn scroll về đầu trang khi chuyển route
+    return { top: 0 }
+  },
   routes: [
     {
       path: '/',
@@ -116,13 +125,11 @@ const router = createRouter({
       component: AccountView,
       meta: { requiresAuth: true },
       children: [
-        { path: '', redirect: '/account/info' },
+        { path: '', redirect: '/account/orders' },
         { path: 'info', component: AccountInfo },
-        // { path: 'orders', component: () => import('@/views/account/Orders.vue') },
-        // { path: 'favorites', component: () => import('@/views/account/Favorites.vue') },
+        { path: 'orders', component: OrderList },
         { path: 'addresses', component: Location },
         { path: 'password', component: ChangePassword },
-        // { path: 'delete', component: () => import('@/views/account/DeleteAccount.vue') },
       ],
     },
     {

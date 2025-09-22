@@ -57,6 +57,14 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
+  const clearCart = () => {
+    items.value = []
+    subtotal.value = 0
+    totalQuantity.value = 0
+    cartId.value = null
+    error.value = null
+  }
+
   return {
     items,
     subtotal,
@@ -68,5 +76,6 @@ export const useCartStore = defineStore('cart', () => {
     addToCart,
     updateQuantity,
     removeFromCart,
+    clearCart,
   }
 })
