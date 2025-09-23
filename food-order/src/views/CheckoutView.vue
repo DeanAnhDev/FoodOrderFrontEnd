@@ -69,34 +69,21 @@ const router = useRouter()
 
 const cartItems = computed(() => cartStore.items)
 
-// --- promotion helpers (same logic as CartView) ---
-const getPrice = (item) => item.food?.price || item.combo?.price || 0
+// --- promotion helpers (updated to use API data) ---
+const getPrice = (item) => item.originalPrice || 0
 
 const getPromotionAmountPerUnit = (item) => {
-    const promo = item.food?.promotion || item.combo?.promotion
-    if (!promo || !promo.isActive) return 0
-
-    const base = getPrice(item)
-    if (promo.type === 'Amount') {
-        return Math.min(promo.discountAmount || 0, base)
-    }
-    if (promo.type === 'Percent') {
-        const pct = promo.discountAmount || 0
-        return (base * pct) / 100
-    }
-    return 0
+    if (!item.discountAmount) return 0
+    return item.discountAmount / item.quantity
 }
 
 const getDiscountedUnitPrice = (item) => {
-    const base = getPrice(item)
-    const promo = getPromotionAmountPerUnit(item)
-    return Math.max(0, base - promo)
+    return item.finalPrice || item.originalPrice || 0
 }
 
 const finalTotal = computed(() =>
     cartItems.value.reduce((sum, item) => {
-        const unit = getDiscountedUnitPrice(item)
-        return sum + unit * item.quantity
+        return sum + (item.finalTotal || 0)
     }, 0)
 )
 // ---------------------------------------------------

@@ -25,35 +25,18 @@ const getImage = (item) =>
 const getName = (item) =>
   item.food?.foodName || item.combo?.comboName || 'Không rõ'
 
-// Base unit price (before any promotion)
-const getPrice = (item) => item.food?.price || item.combo?.price || 0
+// Base unit price (before any promotion) - use originalPrice from API
+const getPrice = (item) => item.originalPrice || 0
 
-// Calculate promotion amount (per unit) for an item. Supports two types seen in API:
-// - promotion.type === 'Amount' => fixed amount off
-// - promotion.type === 'Percent' => percent off (discountAmount interpreted as percent)
+// Calculate promotion amount (per unit) for an item - use discountAmount from API
 const getPromotionAmountPerUnit = (item) => {
-  const promo = item.food?.promotion || item.combo?.promotion
-  if (!promo || !promo.isActive) return 0
-
-  const base = getPrice(item)
-  if (promo.type === 'Amount') {
-    // fixed money amount
-    return Math.min(promo.discountAmount || 0, base)
-  }
-
-  if (promo.type === 'Percent') {
-    const pct = promo.discountAmount || 0
-    return (base * pct) / 100
-  }
-
-  return 0
+  if (!item.discountAmount) return 0
+  return item.discountAmount / item.quantity
 }
 
-// Unit price after applying item-level promotion
+// Unit price after applying item-level promotion - use finalPrice from API
 const getDiscountedUnitPrice = (item) => {
-  const base = getPrice(item)
-  const promo = getPromotionAmountPerUnit(item)
-  return Math.max(0, base - promo)
+  return item.finalPrice || item.originalPrice || 0
 }
 
 const formatPrice = formattedPrice
@@ -74,11 +57,10 @@ const removeItem = (item) => {
   cartStore.removeFromCart(item.cartItemId)
 }
 
-// Total considers item-level promotions (discounted unit price * quantity)
+// Total considers item-level promotions - use finalTotal from each item
 const total = computed(() =>
   items.value.reduce((sum, item) => {
-    const unit = getDiscountedUnitPrice(item)
-    return sum + unit * item.quantity
+    return sum + (item.finalTotal || 0)
   }, 0)
 )
 
@@ -160,7 +142,7 @@ const toggleDetails = (cartItemId) => {
                 </div>
               </transition>
               <div>
-                <template v-if="getPromotionAmountPerUnit(item) > 0">
+                <template v-if="item.discountAmount && item.discountAmount > 0">
                   <div class="flex items-center gap-3">
                     <div class="text-sm text-gray-400 line-through">{{ formatPrice(getPrice(item)) }}</div>
                     <div class="text-sm text-green-600 font-semibold">-{{ formatPrice(getPromotionAmountPerUnit(item))
@@ -190,7 +172,7 @@ const toggleDetails = (cartItemId) => {
                   </svg>
                 </button>
               </div>
-              <div class="item-total">{{ formatPrice(getDiscountedUnitPrice(item) * item.quantity) }}</div>
+              <div class="item-total">{{ formatPrice(item.finalTotal || 0) }}</div>
             </div>
 
 
