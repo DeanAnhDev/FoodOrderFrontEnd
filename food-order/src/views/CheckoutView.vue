@@ -164,20 +164,49 @@ const handlePayment = async (paymentDetails) => {
         toast.error('Vui lòng chọn phương thức thanh toán')
         return
     }
+
+    // ensure user data is available
+    if (!userStore.user) {
+        try {
+            await userStore.fetchUser()
+        } catch (e) {
+            toast.error('Không thể lấy thông tin người dùng')
+            return
+        }
+    }
+
     // ensure CartId available
     if (!cartStore.cartId) {
         try { await cartStore.fetchCart() } catch { }
     }
 
+    // Get userId from JWT token
+    let userId = null
+    const token = localStorage.getItem('accessToken')
+    if (token) {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]))
+            // Try to get userId from various JWT claim formats
+            userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ||
+                payload.id || payload.userId || payload.sub || payload.nameid
+        } catch (e) {
+            console.error('Cannot parse token:', e)
+        }
+    }
+
     // Build CreateOrderDto per backend contract
     const dto = {
         CartId: cartStore.cartId,
+        UserId: userId || userStore.user?.id || userStore.user?.userId || userStore.user?.ID,
         PaymentMethod: mapPaymentMethod(selectedPaymentMethod.value?.id || paymentDetails.method),
         Note: orderNote.value?.trim() || null,
         LocationId: selectedAddress.value?.id || selectedAddress.value?.locationId || null,
         VoucherId: selectedVoucher.value?.id || selectedVoucher.value?.voucherId || null,
         Reason: '',
     }
+
+    // Debug log to check payload
+    console.log('Order payload:', dto)
 
     try {
         const res = await orderStore.submitOrder(dto)
