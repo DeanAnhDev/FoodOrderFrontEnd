@@ -96,10 +96,14 @@ import { useFoodBySlugStore } from '@/stores/foodStore'
 import { formattedPrice } from '@/utils/formart'
 import { ref } from 'vue'
 import { useCartStore } from '@/stores/cartStore'
+import { useAuthStore } from '@/stores/authStore'
 import { useToast } from 'vue-toastification'
+import { useRouter } from 'vue-router'
 
 const cartStore = useCartStore()
+const authStore = useAuthStore()
 const toast = useToast()
+const router = useRouter()
 
 const route = useRoute()
 const foodBySlugStore = useFoodBySlugStore()
@@ -141,6 +145,13 @@ const decrease = () => {
 
 
 const addToCart = async () => {
+  // Kiểm tra trạng thái đăng nhập
+  if (!authStore.isAuthenticated) {
+    toast.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!')
+    router.push('/login')
+    return
+  }
+
   if (!food.value?.foodId || quantity.value <= 0) {
     toast.error('Dữ liệu món ăn không hợp lệ.')
     return

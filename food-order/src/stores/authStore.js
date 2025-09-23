@@ -10,7 +10,24 @@ export const useAuthStore = defineStore('auth', {
     refreshToken: null,
   }),
 
+  getters: {
+    isAuthenticated: (state) => {
+      return !!(state.accessToken || localStorage.getItem('accessToken'))
+    },
+  },
+
   actions: {
+    // Initialize auth state from localStorage
+    initializeAuth() {
+      const accessToken = localStorage.getItem('accessToken')
+      const refreshToken = localStorage.getItem('refreshToken')
+
+      if (accessToken && refreshToken) {
+        this.accessToken = accessToken
+        this.refreshToken = refreshToken
+      }
+    },
+
     async login(loginData) {
       this.loading = true
       this.error = null

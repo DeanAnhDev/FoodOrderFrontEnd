@@ -66,10 +66,12 @@ import { Info } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { formattedPrice } from '@/utils/formart'
 import { useCartStore } from '@/stores/cartStore'
+import { useAuthStore } from '@/stores/authStore'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
 const cartStore = useCartStore()
+const authStore = useAuthStore()
 
 const props = defineProps({
   category: Object,
@@ -155,6 +157,13 @@ const goToDetail = (categorySlug, itemSlug, type) => {
 }
 
 const addToCart = (item) => {
+  // Kiểm tra trạng thái đăng nhập
+  if (!authStore.isAuthenticated) {
+    toast.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!')
+    router.push('/login')
+    return
+  }
+
   if (!item || !item.type || !item.id) {
     toast.error('Không thể thêm sản phẩm vào giỏ hàng.')
     return

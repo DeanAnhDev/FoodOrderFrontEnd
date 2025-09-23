@@ -83,10 +83,12 @@ import { Info } from 'lucide-vue-next'
 import { formattedPrice } from '@/utils/formart'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cartStore'
+import { useAuthStore } from '@/stores/authStore'
 import { useToast } from 'vue-toastification'
 const toast = useToast()
 
 const cartStore = useCartStore()
+const authStore = useAuthStore()
 
 const comboStore = useComboStore()
 
@@ -126,6 +128,13 @@ const goToDetail = (comboSlug) => {
   })
 }
 const handleAddToCart = async (item) => {
+  // Kiểm tra trạng thái đăng nhập
+  if (!authStore.isAuthenticated) {
+    toast.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!')
+    router.push('/login')
+    return
+  }
+
   try {
     await cartStore.addToCart({ comboId: item.comboId, quantity: 1 })
     toast.success('Đã thêm vào giỏ hàng!')

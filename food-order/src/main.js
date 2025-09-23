@@ -52,13 +52,11 @@ try {
   const userStore = useUserStore(pinia)
   const locationStore = useLocationStore(pinia)
 
-  const accessToken = localStorage.getItem('accessToken')
-  const refreshToken = localStorage.getItem('refreshToken')
-  if (accessToken) {
-    // rehydrate minimal auth state so other code can rely on it
-    authStore.accessToken = accessToken
-    authStore.refreshToken = refreshToken
+  // Initialize auth state from localStorage
+  authStore.initializeAuth()
 
+  const accessToken = localStorage.getItem('accessToken')
+  if (accessToken) {
     // silently fetch current user and locations (don't block mount)
     userStore.fetchUser().catch((e) => {
       // ignore - UI will prompt login if needed

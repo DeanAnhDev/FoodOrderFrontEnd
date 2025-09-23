@@ -12,4 +12,9 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    port: 3000, // Thay đổi port theo ý muốn (ví dụ: 3000, 4000, 8080...)
+    open: true, // Tự động mở browser khi start dev server
+    host: true, // Cho phép truy cập từ mạng local
+  },
 })
