@@ -8,6 +8,11 @@
             class="absolute top-2 right-2 h-7 w-7 bg-black/50 text-white rounded-full shadow-md z-10 cursor-pointer transition-all duration-300 hover:bg-black/70" />
           <!-- image -->
           <div class="col-span-5 md:col-span-1 overflow-hidden md:rounded-t-lg relative aspect-[4/3]">
+            <!-- badge khuyến mãi góc trái -->
+            <span v-if="item.promotionLabel"
+              class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded z-10">
+              {{ item.promotionLabel }}
+            </span>
             <img v-if="item.image?.url" :src="`${item.image.url}`"
               :alt="`Hình ảnh ${item.type === 'food' ? 'món ăn' : 'combo'}`"
               class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 hover:scale-105"
@@ -20,9 +25,16 @@
                 @click="goToDetail(category.slug, item.slug, item.type)">
                 {{ item.name }}
               </h2>
-              <h2 class="text-base md:text-xl text-primary font-bold w-2/5 text-left md:text-right">
-                {{ formattedPrice(item.price) }}
-              </h2>
+
+
+              <div class="w-2/5 text-left md:text-right flex flex-col">
+                <span v-if="item.promotionLabel" class="text-gray-400 line-through text-sm mr-1">
+                  {{ formattedPrice(item.price) }}
+                </span>
+                <span class="text-primary font-bold text-base md:text-xl">
+                  {{ formattedPrice(item.finalPrice) }}
+                </span>
+              </div>
             </div>
 
             <p class="text-gray-600 text-sm mt-2 line-clamp-1 md:line-clamp-2 flex-grow">
@@ -67,31 +79,69 @@ const router = useRouter()
 
 const combinedItems = computed(() => {
   const foods =
-    props.category.foods?.map((food) => ({
-      id: food.foodId,
-      name: food.foodName,
-      image: food.images,
-      price: food.price,
-      description: food.description,
-      slug: food.slug,
-      type: 'food',
-      quantity: food.quantity ?? 0,
-    })) || []
+    props.category.foods?.map((food) => {
+      let finalPrice = food.price
+      let promotionLabel = null
+
+      if (food.promotion && food.promotion.isActive) {
+        if (food.promotion.type === 'Amount') {
+          finalPrice = food.price - food.promotion.discountAmount
+          promotionLabel = `Giảm ${formattedPrice(food.promotion.discountAmount)}`
+        } else if (food.promotion.type === 'Percentage') {
+          finalPrice = food.price * (1 - food.promotion.discountAmount / 100)
+          promotionLabel = `Giảm ${food.promotion.discountAmount}%`
+        }
+      }
+
+      return {
+        id: food.foodId,
+        name: food.foodName,
+        image: food.images,
+        price: food.price,
+        finalPrice,
+        description: food.description,
+        slug: food.slug,
+        type: 'food',
+        quantity: food.quantity ?? 0,
+        status: food.status ?? false,
+        promotionLabel,
+      }
+    }) || []
 
   const combos =
-    props.category.combos?.map((combo) => ({
-      id: combo.comboId,
-      name: combo.comboName,
-      image: combo.images,
-      price: combo.price,
-      description: combo.description,
-      slug: combo.slug,
-      type: 'combo',
-      quantity: combo.quantity ?? 0,
-    })) || []
+    props.category.combos?.map((combo) => {
+      let finalPrice = combo.price
+      let promotionLabel = null
+
+      if (combo.promotion && combo.promotion.isActive) {
+        if (combo.promotion.type === 'Amount') {
+          finalPrice = combo.price - combo.promotion.discountAmount
+          promotionLabel = `Giảm ${formattedPrice(combo.promotion.discountAmount)}`
+        } else if (combo.promotion.type === 'Percentage') {
+          finalPrice = combo.price * (1 - combo.promotion.discountAmount / 100)
+          promotionLabel = `Giảm ${combo.promotion.discountAmount}%`
+        }
+      }
+
+      return {
+        id: combo.comboId,
+        name: combo.comboName,
+        image: combo.images,
+        price: combo.price,
+        finalPrice,
+        description: combo.description,
+        slug: combo.slug,
+        type: 'combo',
+        quantity: combo.quantity ?? 0,
+        status: combo.status ?? false,
+        promotionLabel,
+      }
+    }) || []
 
   return [...foods, ...combos]
 })
+
+
 
 
 const goToDetail = (categorySlug, itemSlug, type) => {

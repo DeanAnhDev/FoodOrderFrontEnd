@@ -7,6 +7,7 @@ export const useCartStore = defineStore('cart', () => {
   const items = ref([])
   const subtotal = ref(0)
   const totalQuantity = ref(0)
+  const cartId = ref(null)
   const loading = ref(false)
   const error = ref(null)
 
@@ -15,7 +16,9 @@ export const useCartStore = defineStore('cart', () => {
     error.value = null
     try {
       const response = await cartService.getCart()
-      items.value = response.data.cart.cartItems || []
+      const cart = response.data.cart || {}
+      items.value = cart.cartItems || []
+      cartId.value = cart.id || cart.cartId || null
       subtotal.value = response.data.subtotal
       totalQuantity.value = response.data.totalQuantity
     } catch (err) {
@@ -54,15 +57,25 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
+  const clearCart = () => {
+    items.value = []
+    subtotal.value = 0
+    totalQuantity.value = 0
+    cartId.value = null
+    error.value = null
+  }
+
   return {
     items,
     subtotal,
     totalQuantity,
+    cartId,
     loading,
     error,
     fetchCart,
     addToCart,
     updateQuantity,
     removeFromCart,
+    clearCart,
   }
 })
