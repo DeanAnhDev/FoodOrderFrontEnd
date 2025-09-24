@@ -33,7 +33,7 @@
                                     <div class="line-1">
                                         <span class="code">{{ v.code }}</span>
                                         <span class="badge" :class="displayType(v).toLowerCase()">{{ displayType(v)
-                                            }}</span>
+                                        }}</span>
                                     </div>
                                     <div class="desc">{{ v.description || v.name }}</div>
                                     <div class="meta">
@@ -43,12 +43,12 @@
                                             formatPrice(minOrderAmount(v)) }}</strong></span>
                                         <span v-if="hasCap(v)" class="sep">•</span>
                                         <span v-if="hasCap(v)">Tối đa: <strong>{{ formatPrice(maxDiscountCap(v))
-                                                }}</strong></span>
+                                        }}</strong></span>
                                     </div>
                                     <div class="hint">
                                         <template v-if="v.eligible">
                                             Tiết kiệm: <strong class="save">{{ formatPrice(discountAmount(v))
-                                                }}</strong>
+                                            }}</strong>
                                             <span class="sep">•</span>
                                             Sau giảm: <strong>{{ formatPrice(finalPriceAfter(v)) }}</strong>
                                         </template>
@@ -137,10 +137,12 @@ const isWithinDate = (v) => {
     if (e && t > e) return false
     return true
 }
+
 const meetsMinOrder = (v) => {
     const min = Number(v.minOrderAmount || v.minOrderPrice || v.minimumOrder || 0)
     return cartTotal.value >= min
 }
+
 const isActive = (v) => (v.isActive === undefined ? true : !!v.isActive) && !v.isOutOfStock
 
 const eligibleAndIneligible = computed(() => {
@@ -149,6 +151,7 @@ const eligibleAndIneligible = computed(() => {
         eligible: isActive(v) && isWithinDate(v) && meetsMinOrder(v),
     }))
 })
+
 const eligibleVouchers = computed(() => eligibleAndIneligible.value.filter(v => v.eligible))
 const allVouchers = computed(() => eligibleAndIneligible.value)
 
@@ -184,8 +187,8 @@ const finalPriceAfter = (v) => Math.max(0, cartTotal.value - discountAmount(v))
 const formatPrice = formattedPrice
 
 onMounted(async () => {
-    // tải voucher đang hoạt động
-    await voucherStore.fetchVouchers({ isActive: true, pageSize: 50 })
+    // tải voucher đang hoạt động và không hết hàng
+    await voucherStore.fetchVouchers({ isActive: true, pageSize: 50, isOutOfStock: false })
     // Đóng popup khi nhấn phím ESC
     window.addEventListener('keydown', onKeydown)
 })
@@ -197,7 +200,7 @@ onUnmounted(() => {
 watch(open, async (val) => {
     if (val) {
         // làm mới khi mở
-        await voucherStore.fetchVouchers({ isActive: true, pageSize: 50 })
+        await voucherStore.fetchVouchers({ isActive: true, pageSize: 50, isOutOfStock: false })
     }
 })
 
