@@ -39,11 +39,13 @@ export const useCartStore = defineStore('cart', () => {
 
   const updateQuantity = async (cartItemId, quantity) => {
     try {
-      await cartService.updateItem(cartItemId, quantity)
+      const response = await cartService.updateItem(cartItemId, quantity)
       await fetchCart()
+      return response.data // Return the response data so we can access the message
     } catch (err) {
       error.value = err.response?.data?.message || 'Lỗi khi cập nhật giỏ hàng'
       await fetchCart()
+      throw err // Re-throw to handle in component
     }
   }
 

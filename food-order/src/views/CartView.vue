@@ -4,7 +4,9 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import cartService from '@/services/cartService'
 import { formattedPrice } from '@/utils/formart'
+import { useToast } from 'vue-toastification'
 const cartStore = useCartStore()
+const toast = useToast()
 // coupon/discount removed — payment uses only item-level promotions
 
 onMounted(() => {
@@ -41,15 +43,63 @@ const getDiscountedUnitPrice = (item) => {
 
 const formatPrice = formattedPrice
 
-const increase = (item) => {
+const increase = async (item) => {
+  const originalQuantity = item.quantity
   item.quantity++
-  cartStore.updateQuantity(item.cartItemId, item.quantity)
+
+  try {
+    const response = await cartStore.updateQuantity(item.cartItemId, item.quantity)
+
+    // Debug log to see the response structure
+    console.log('Update quantity response:', response)
+
+    // Check for message in different possible locations
+    const message = response?.message || response?.data?.message || response?.data?.data?.message
+    if (message) {
+      toast.warning(message, {
+        timeout: 4000,
+        position: 'top-right'
+      })
+    }
+  } catch (error) {
+    console.log('Update quantity error:', error)
+
+    // Check if the error response contains the message
+    const errorMessage = error.response?.data?.message
+    if (errorMessage) {
+      toast.warning(errorMessage, {
+        timeout: 4000,
+        position: 'top-right'
+      })
+    } else {
+      toast.error('Có lỗi xảy ra khi cập nhật số lượng')
+    }
+
+    // Reset the quantity if there's an error
+    item.quantity = originalQuantity
+  }
 }
 
-const decrease = (item) => {
+const decrease = async (item) => {
   if (item.quantity > 1) {
+    const originalQuantity = item.quantity
     item.quantity--
-    cartStore.updateQuantity(item.cartItemId, item.quantity)
+
+    try {
+      const response = await cartStore.updateQuantity(item.cartItemId, item.quantity)
+
+      // Check if there's any message from the API
+      if (response?.message) {
+        toast.info(response.message, {
+          timeout: 3000,
+          position: 'top-center'
+        })
+      }
+    } catch (error) {
+      // Reset the quantity if there's an error
+      item.quantity = originalQuantity
+      toast.error('Có lỗi xảy ra khi cập nhật số lượng')
+    }
   }
 }
 
@@ -137,7 +187,7 @@ const toggleDetails = (cartItemId) => {
               <transition name="detail-collapse">
                 <div v-show="expandedItems.has(item.cartItemId)" class="detail-card w-full mt-3">
                   <div class="detail-card-inner">
-                    <p class="mb-0 text-gray-700">{{ item.food?.description || item.combo?.description || 'Không có môtả' }}</p>
+                    <p class="mb-0 text-gray-700">{{ item.food?.description || item.combo?.description || 'Không có mô tả' }}</p>
                   </div>
                 </div>
               </transition>
