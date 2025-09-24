@@ -31,6 +31,7 @@ export const useAuthStore = defineStore('auth', {
     async login(loginData) {
       this.loading = true
       this.error = null
+      this.message = ''
       try {
         const response = await loginUser(loginData)
         this.message = response.data.message
